@@ -36,97 +36,96 @@ const Login: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#121212] to-[#2A2A2A] flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
-        <div className="bg-[#121212] rounded-lg overflow-hidden shadow-xl flex flex-col md:flex-row">
-          <div className="w-full md:w-1/2 p-8 md:p-12">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h1 className="text-3xl md:text-4xl font-bold text-[#BB86FC] mb-6">Login</h1>
-              
-              <form onSubmit={handleLogin} className="space-y-4">
-                <TextField
-                  label="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  fullWidth
-                  placeholder="Username"
-                />
-                
-                <TextField
-                  label="Password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  fullWidth
-                  placeholder="Password"
-                />
-                
-                {error && (
-                  <p className="text-[#CF6679] text-sm">{error}</p>
-                )}
-                
-                <div className="flex justify-end">
-                  <Link to="/forgot-password" className="text-sm text-[#BB86FC] hover:underline">
-                    Forget password?
-                  </Link>
-                </div>
-                
-                <div className="flex items-center my-4">
-                  <div className="flex-grow h-px bg-[#757575]"></div>
-                  <span className="px-4 text-sm text-[#CCCCCC]">Or</span>
-                  <div className="flex-grow h-px bg-[#757575]"></div>
-                </div>
-                
-                <Button
-                  type="submit"
-                  variant="primary"
-                  fullWidth
-                  size="lg"
-                >
-                  Login
-                </Button>
-              </form>
-            </motion.div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#121212] via-[#2A2A2A] to-[#BB86FC] flex">
+      {/* Left Side - Welcome Back */}
+      <div className="hidden lg:flex flex-1 p-12 flex-col justify-center items-center relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center z-10"
+        >
+          <h2 className="text-6xl font-bold text-[#F5F5F5] mb-12">Welcome Back</h2>
+          <AudioWaveform isActive={false} size="lg" className="mb-12 opacity-40" />
+          <p className="text-[#F5F5F5] mb-8">Don't have an account?</p>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/register')}
+            size="lg"
+            className="min-w-[200px] border-[#F5F5F5] text-[#F5F5F5]"
+          >
+            Signup
+          </Button>
+        </motion.div>
+      </div>
+
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-md bg-[#1E1E1E] p-12 rounded-2xl"
+        >
+          <h1 className="text-4xl font-bold text-[#BB86FC] mb-12">Login</h1>
           
-          <div className="hidden md:flex md:w-1/2 bg-[#1E1E1E] p-12 flex-col justify-center items-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="text-center"
-            >
-              <h2 className="text-4xl font-bold text-[#F5F5F5] mb-6">Hello Friend</h2>
-              
-              <AudioWaveform isActive={false} className="my-8" />
-              
-              <p className="text-[#CCCCCC] mb-8">
-                Already have an account?
-              </p>
-              
-              <Button
-                variant="outline"
-                onClick={() => navigate('/register')}
-                size="lg"
+          <form onSubmit={handleLogin} className="space-y-6">
+            <TextField
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              fullWidth
+              variant="outlined"
+            />
+            
+            <TextField
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              fullWidth
+              variant="outlined"
+            />
+            
+            <div className="flex justify-end">
+              <Link 
+                to="/forgot-password" 
+                className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
               >
-                Login
-              </Button>
-            </motion.div>
+                Forget password?
+              </Link>
+            </div>
+            
+            {error && (
+              <p className="text-[#CF6679] text-sm">{error}</p>
+            )}
+            
+            <div className="flex items-center my-8">
+              <div className="flex-grow h-px bg-[#F5F5F5] opacity-40"></div>
+              <span className="px-4 text-[#F5F5F5]">Or</span>
+              <div className="flex-grow h-px bg-[#F5F5F5] opacity-40"></div>
+            </div>
+            
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              size="lg"
+              className="bg-[#BB86FC] text-[#F5F5F5]"
+            >
+              Login
+            </Button>
+          </form>
+
+          <div className="mt-8 text-center lg:hidden">
+            <p className="text-[#F5F5F5]">
+              Don't have an account?{' '}
+              <Link to="/register" className="text-[#BB86FC] hover:underline">
+                Sign up
+              </Link>
+            </p>
           </div>
-        </div>
-        
-        <div className="mt-6 text-center md:hidden">
-          <p className="text-[#CCCCCC]">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-[#BB86FC] hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

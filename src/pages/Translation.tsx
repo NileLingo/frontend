@@ -12,7 +12,7 @@ import {
 import { translateText } from '../services/translationService';
 import { RootState } from '../store';
 import { v4 as uuidv4 } from 'uuid';
-import { Upload, Plus, History } from 'lucide-react';
+import { Upload, Plus, History, Mic } from 'lucide-react';
 
 const Translation: React.FC = () => {
   const dispatch = useDispatch();
@@ -54,61 +54,67 @@ const Translation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#121212] text-[#F5F5F5] p-8">
-      <h1 className="text-3xl font-bold text-center mb-12">NileLingo</h1>
-      
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Input Area */}
-        <div className="relative">
-          <div className="absolute top-4 left-4 text-lg font-semibold">
-            {currentTranslation.sourceLanguage}
-          </div>
-          <textarea
-            className="w-full h-64 bg-[#1E1E1E] rounded-lg p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none focus:ring-2 focus:ring-[#BB86FC]"
-            placeholder="Type here .."
-            value={currentTranslation.sourceText}
-            onChange={handleTextInput}
-          />
-          <button 
-            className="absolute bottom-4 right-4 text-[#BB86FC]"
-            onClick={() => setIsRecording(!isRecording)}
-          >
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isRecording ? 'bg-[#BB86FC] bg-opacity-20' : ''}`}>
-              <div className={`w-4 h-4 rounded-full ${isRecording ? 'bg-[#BB86FC]' : 'border-2 border-[#BB86FC]'}`} />
+    <div className="min-h-screen bg-[#121212] text-[#F5F5F5] flex flex-col">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+        <h1 className="text-4xl font-bold mb-16">NileLingo</h1>
+        
+        <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Source Text Area */}
+          <div className="relative">
+            <div className="absolute top-4 left-4 text-xl font-semibold">
+              {currentTranslation.sourceLanguage}
             </div>
+            <textarea
+              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none focus:ring-2 focus:ring-[#BB86FC]"
+              placeholder="Type here .."
+              value={currentTranslation.sourceText}
+              onChange={handleTextInput}
+            />
+            <button 
+              className="absolute bottom-4 right-4 text-[#BB86FC] hover:opacity-80 transition-opacity"
+              onClick={() => setIsRecording(!isRecording)}
+            >
+              <Mic size={24} className={isRecording ? 'text-[#BB86FC]' : 'text-[#BB86FC] opacity-60'} />
+            </button>
+          </div>
+
+          {/* Target Text Area */}
+          <div className="relative">
+            <div className="absolute top-4 left-4 text-xl font-semibold">
+              {currentTranslation.targetLanguage}
+            </div>
+            <textarea
+              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none"
+              placeholder="Translation will appear here"
+              value={currentTranslation.translatedText}
+              readOnly
+            />
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-center space-x-12 mt-16">
+          <button className="group flex flex-col items-center">
+            <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
+              <Upload className="w-5 h-5 text-[#BB86FC]" />
+            </div>
+            <span className="text-sm text-[#757575]">Upload audio</span>
+          </button>
+          
+          <button className="group flex flex-col items-center">
+            <div className="w-16 h-16 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
+              <Plus className="w-8 h-8 text-[#BB86FC]" />
+            </div>
+            <span className="text-sm text-[#757575]">Join room</span>
+          </button>
+          
+          <button className="group flex flex-col items-center">
+            <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
+              <History className="w-5 h-5 text-[#BB86FC]" />
+            </div>
+            <span className="text-sm text-[#757575]">History</span>
           </button>
         </div>
-
-        {/* Output Area */}
-        <div className="relative">
-          <div className="absolute top-4 left-4 text-lg font-semibold">
-            {currentTranslation.targetLanguage}
-          </div>
-          <textarea
-            className="w-full h-64 bg-[#1E1E1E] rounded-lg p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none"
-            placeholder="Translation will appear here"
-            value={currentTranslation.translatedText}
-            readOnly
-          />
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex justify-center items-center space-x-8 mt-12">
-        <button className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center hover:bg-[#2A2A2A] transition-colors">
-          <Upload className="w-5 h-5 text-[#BB86FC]" />
-          <span className="sr-only">Upload audio</span>
-        </button>
-        
-        <button className="w-16 h-16 bg-[#1E1E1E] rounded-full flex items-center justify-center hover:bg-[#2A2A2A] transition-colors">
-          <Plus className="w-8 h-8 text-[#BB86FC]" />
-          <span className="sr-only">Join room</span>
-        </button>
-        
-        <button className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center hover:bg-[#2A2A2A] transition-colors">
-          <History className="w-5 h-5 text-[#BB86FC]" />
-          <span className="sr-only">History</span>
-        </button>
       </div>
     </div>
   );
