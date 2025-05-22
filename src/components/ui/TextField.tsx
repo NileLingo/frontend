@@ -15,7 +15,7 @@ const TextField: React.FC<TextFieldProps> = ({
   className = '',
   ...props
 }) => {
-  const baseInputStyles = 'bg-[#1E1E1E] text-[#F5F5F5] placeholder-[#757575] rounded focus:outline-none focus:ring-1 focus:ring-[#BB86FC] transition-all';
+  const baseInputStyles = 'bg-[#1E1E1E]  text-[#F5F5F5] placeholder-[#757575] rounded focus:outline-none focus:ring-1 focus:ring-[#BB86FC] transition-all';
   
   const variantStyles = {
     filled: 'p-3 border-none',
