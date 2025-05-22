@@ -9,26 +9,26 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen bg-[#121212] text-[#F5F5F5]">
+    <div className="min-h-screen bg-[#121212] text-[#F5F5F5] px-24 py-6 ">
       {/* Navigation */}
-      <nav className="px-6 py-4 flex items-center justify-between">
+      <nav className="flex items-center justify-between">
         <h1 className="text-xl font-bold">NILELINGU</h1>
         <div className="flex items-center space-x-8">
           <a href="#research" className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors">Research</a>
           <a href="#products" className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors">Products</a>
           <a href="#safety" className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors">Safety</a>
           <a href="#company" className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors">Company</a>
+        </div>
           <Button 
             variant="primary"
             onClick={() => navigate('/translate')}
           >
             Try it now !
           </Button>
-        </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-[#1E1E1E] rounded-3xl mx-6 mt-8 p-12">
+      <section className="relative bg-[#1E1E1E] rounded-3xl mx-6 mt-8 px-12 py-24">
         <div className="grid grid-cols-2 gap-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -74,7 +74,7 @@ const Home: React.FC = () => {
 
       {/* Features Section */}
       <section className="px-6 py-24">
-        <div className="grid grid-cols-2 gap-24">
+        <div className="grid grid-cols-1 gap-12">
           {/* AI-Powered Accuracy */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -89,7 +89,7 @@ const Home: React.FC = () => {
               </p>
             </div>
             <div className="w-32 h-32 bg-[#BB86FC] rounded-2xl flex items-center justify-center">
-              <Bot size={48} className="text-[#121212]" />
+              <Bot size={50} className="text-[#121212]" />
             </div>
           </motion.div>
 
@@ -101,7 +101,7 @@ const Home: React.FC = () => {
             className="flex items-start justify-between"
           >
             <div className="w-32 h-32 bg-[#BB86FC] rounded-2xl flex items-center justify-center">
-              <Mic size={48} className="text-[#121212]" />
+              <Mic size={50} className="text-[#121212]" />
             </div>
             <div className="max-w-md">
               <h3 className="text-3xl font-bold mb-4">Text-to-Speech Support</h3>

@@ -17,30 +17,34 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
   
   const sizeStyles = {
     sm: {
-      height: 'h-12',
+      containerHeight: 'h-12',
       barWidth: 'w-1',
       spacing: 'gap-[2px]'
     },
     md: {
-      height: 'h-16',
+      containerHeight: 'h-16',
       barWidth: 'w-1.5',
       spacing: 'gap-[3px]'
     },
     lg: {
-      height: 'h-20',
+      containerHeight: 'h-20',
       barWidth: 'w-2',
       spacing: 'gap-1'
     }
   };
   
-  const { height, barWidth, spacing } = sizeStyles[size];
+  const { containerHeight, barWidth, spacing } = sizeStyles[size];
+  
+  // Initial random heights for all bars
+  const initialHeights = bars.map(() => `${Math.random() * 40 + 10}%`);
   
   return (
-    <div className={`flex items-center justify-center ${spacing} ${className}`}>
+    <div className={`flex items-center ${containerHeight} ${spacing} ${className}`}>
       {bars.map((_, i) => (
         <motion.div
           key={i}
-          className={`${barWidth} bg-[#757575] rounded-full ${isActive ? 'bg-[#BB86FC]' : ''}`}
+          className={`${barWidth} rounded-full ${isActive ? 'bg-[#BB86FC]' : 'bg-[#757575]'}`}
+          initial={{ height: initialHeights[i] }}
           animate={{
             height: isActive 
               ? [
@@ -50,15 +54,12 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
                   `${Math.random() * 60 + 20}%`,
                   `${Math.random() * 40 + 10}%`
                 ]
-              : '40%'
+              : initialHeights[i]
           }}
           transition={{
-            duration: isActive ? 0.8 : 0,
+            duration: isActive ? 0.8 : 0.3,
             repeat: isActive ? Infinity : 0,
             ease: "easeInOut"
-          }}
-          style={{
-            height: isActive ? undefined : `${Math.random() * 40 + 10}%`
           }}
         />
       ))}

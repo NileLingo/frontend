@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, StopCircle, Play, Upload, RotateCcw } from 'lucide-react';
+import { Mic, StopCircle, Play, Pause, Upload, RotateCcw } from 'lucide-react';
 import Button from './Button';
 
 interface AudioControlsProps {
@@ -23,8 +23,6 @@ const AudioControls: React.FC<AudioControlsProps> = ({
   isPlaying = false,
   hasRecording = false,
 }) => {
-  const [isHovering, setIsHovering] = useState(false);
-  
   return (
     <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
       {isRecording ? (
@@ -32,6 +30,7 @@ const AudioControls: React.FC<AudioControlsProps> = ({
           onClick={onStopRecording}
           variant="primary"
           className="flex items-center justify-center p-3 rounded-full"
+          aria-label="Stop recording"
         >
           <StopCircle size={24} />
         </Button>
@@ -40,10 +39,9 @@ const AudioControls: React.FC<AudioControlsProps> = ({
           onClick={onStartRecording}
           variant={hasRecording ? "outline" : "primary"}
           className="flex items-center justify-center p-3 rounded-full"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
+          aria-label={hasRecording ? "Record again" : "Start recording"}
         >
-          <Mic size={24} className={isHovering ? "animate-pulse" : ""} />
+          <MicWithPulse />
         </Button>
       )}
       
@@ -53,28 +51,47 @@ const AudioControls: React.FC<AudioControlsProps> = ({
             onClick={onPlay}
             variant="outline"
             className="flex items-center justify-center p-3 rounded-full"
+            aria-label={isPlaying ? "Pause playback" : "Play recording"}
           >
-            <Play size={24} />
+            {isPlaying ? <Pause size={24} /> : <Play size={24} />}
           </Button>
           
           <Button
             onClick={onReset}
             variant="secondary"
             className="flex items-center justify-center p-3 rounded-full"
+            aria-label="Reset recording"
           >
             <RotateCcw size={20} />
           </Button>
         </>
       )}
       
-      <Button
-        onClick={onUpload}
-        variant="secondary"
-        className="flex items-center justify-center p-3 rounded-full"
-      >
-        <Upload size={20} />
-      </Button>
+      {hasRecording && (
+        <Button
+          onClick={onUpload}
+          variant="secondary"
+          className="flex items-center justify-center p-3 rounded-full"
+          aria-label="Upload recording"
+        >
+          <Upload size={20} />
+        </Button>
+      )}
     </div>
+  );
+};
+
+// Extracted component for the pulsing mic icon
+const MicWithPulse = () => {
+  const [isHovering, setIsHovering] = useState(false);
+  
+  return (
+    <Mic 
+      size={24} 
+      className={isHovering ? "animate-pulse" : ""}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    />
   );
 };
 

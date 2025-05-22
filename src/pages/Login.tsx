@@ -6,7 +6,6 @@ import { loginUser } from '../services/authService';
 import { motion } from 'framer-motion';
 import TextField from '../components/ui/TextField';
 import Button from '../components/ui/Button';
-import AudioWaveform from '../components/ui/AudioWaveform';
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -36,46 +35,60 @@ const Login: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#121212] via-[#2A2A2A] to-[#BB86FC] flex">
-      {/* Left Side - Welcome Back */}
-      <div className="hidden lg:flex flex-1 p-12 flex-col justify-center items-center relative">
+    <div className="relative w-full h-screen bg-gradient-to-bl from-[#121212] via-[#2A2A2A] to-[#BB86FC] overflow-hidden px-4 md:px-10 flex flex-col lg:flex-row items-center justify-center">
+      {/* Sound bars on the LEFT side */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        {/* Left wave bars - positioned on the left side */}
+        <div className="absolute left-[7.5px] top-[395px] h-[42px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+        <div className="absolute left-[37.5px] top-[380.765px] h-[70.5px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+        <div className="absolute left-[67.5px] top-[363.5px] h-[105px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+        <div className="absolute left-[97.5px] top-[380.765px] h-[70.5px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+        <div className="absolute left-[127.5px] top-[395px] h-[42px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+        <div className="absolute left-[157.5px] top-[413px] h-[13px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+
+        {/* Right side minimal bars */}
+        <div className="absolute right-[65px] top-[395px] h-[42px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+        <div className="absolute right-[42px] top-[407px] h-[20px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+        <div className="absolute right-[5px] top-[395px] h-[42px] w-[15px] bg-white bg-opacity-40 rounded-full"></div>
+      </div>
+
+      {/* Left Side - Welcome Back (now on the right) */}
+      <div className="hidden lg:flex flex-col justify-center items-center ml-auto w-full h-full text-white z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center z-10"
         >
-          <h2 className="text-6xl font-bold text-[#F5F5F5] mb-12">Welcome Back</h2>
-          <AudioWaveform isActive={false} size="lg" className="mb-12 opacity-40" />
-          <p className="text-[#F5F5F5] mb-8">Don't have an account?</p>
+          <h2 className="text-7xl font-bold mb-6">Welcome Back</h2>
+          <p className="text-lg font-medium mb-10">Don't have an account?</p>
           <Button
             variant="outline"
             onClick={() => navigate('/register')}
-            size="lg"
-            className="min-w-[200px] border-[#F5F5F5] text-[#F5F5F5]"
-          >
+            className="px-12 py-3 border border-white rounded-2xl text-[#BB86FC] font-medium hover:bg-[#BB86FC]/10"
+            size="xl"          >
             Signup
           </Button>
         </motion.div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      {/* Right Side - Login Form (now on the left) */}
+      <div className="w-full lg:w-[60%] bg-[#1E1E1E] rounded-2xl p-8 md:p-10 z-10 lg:ml-20">
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
+          initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md bg-[#1E1E1E] p-12 rounded-2xl"
         >
-          <h1 className="text-4xl font-bold text-[#BB86FC] mb-12">Login</h1>
+          <h1 className="text-6xl font-bold text-[#BB86FC] text-center mb-8">Login</h1>
           
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6 p-5">
             <TextField
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Username"
               fullWidth
               variant="outlined"
+              className="border border-white/60 rounded-md"
             />
             
             <TextField
@@ -85,12 +98,13 @@ const Login: React.FC = () => {
               placeholder="Password"
               fullWidth
               variant="outlined"
+              className="border border-white/60 rounded-md"
             />
             
             <div className="flex justify-end">
               <Link 
                 to="/forgot-password" 
-                className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
+                className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors text-sm font-semibold"
               >
                 Forget password?
               </Link>
@@ -111,7 +125,7 @@ const Login: React.FC = () => {
               variant="primary"
               fullWidth
               size="lg"
-              className="bg-[#BB86FC] text-[#F5F5F5]"
+              className="rounded-full bg-[#BB86FC] hover:bg-[#A070DA] text-white py-3 font-semibold"
             >
               Login
             </Button>
