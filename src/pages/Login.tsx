@@ -114,11 +114,7 @@ const Login: React.FC = () => {
               <p className="text-[#CF6679] text-sm">{error}</p>
             )}
             
-            <div className="flex items-center my-8">
-              <div className="flex-grow h-px bg-[#F5F5F5] opacity-40"></div>
-              <span className="px-4 text-[#F5F5F5]">Or</span>
-              <div className="flex-grow h-px bg-[#F5F5F5] opacity-40"></div>
-            </div>
+          
             
             <Button
               type="submit"
