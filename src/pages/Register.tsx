@@ -39,6 +39,7 @@ const Register: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    
     try {
       dispatch(registerStart());
       const user = await registerUser(username, email, password);
@@ -96,6 +97,7 @@ const Register: React.FC = () => {
                 className="flex-1 border border-white/60 rounded-md"
               />
               <TextField
+                type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -122,15 +124,6 @@ const Register: React.FC = () => {
               variant="outlined"
               className="w-full border border-white/60 rounded-md"
             />
-
-            <div className="flex justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors text-sm font-semibold"
-              >
-                Forget password?
-              </Link>
-            </div>
 
             {errors.form && (
               <p className="text-[#CF6679] text-sm">{errors.form}</p>
@@ -169,7 +162,8 @@ const Register: React.FC = () => {
             variant="outline"
             onClick={() => navigate('/login')}
             className="px-12 py-3 border border-white rounded-2xl text-[#BB86FC] font-medium hover:bg-[#BB86FC]/10"
-            size="xl"          >
+            size="xl"          
+          >
             login
           </Button>
         </motion.div>

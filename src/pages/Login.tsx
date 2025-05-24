@@ -11,21 +11,21 @@ const Login: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!username || !password) {
-      setError('Please enter both username and password');
+    if (!email || !password) {
+      setError('Please enter both email and password');
       return;
     }
     
     try {
       dispatch(loginStart());
-      const user = await loginUser(username, password);
+      const user = await loginUser(email, password);
       dispatch(loginSuccess(user));
       navigate('/translate');
     } catch (error) {
@@ -66,7 +66,8 @@ const Login: React.FC = () => {
             variant="outline"
             onClick={() => navigate('/register')}
             className="px-12 py-3 border border-white rounded-2xl text-[#BB86FC] font-medium hover:bg-[#BB86FC]/10"
-            size="xl"          >
+            size="xl"          
+          >
             Signup
           </Button>
         </motion.div>
@@ -83,9 +84,10 @@ const Login: React.FC = () => {
           
           <form onSubmit={handleLogin} className="space-y-6 p-5">
             <TextField
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
               fullWidth
               variant="outlined"
               className="border border-white/60 rounded-md"
@@ -113,8 +115,6 @@ const Login: React.FC = () => {
             {error && (
               <p className="text-[#CF6679] text-sm">{error}</p>
             )}
-            
-          
             
             <Button
               type="submit"

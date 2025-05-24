@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   setSourceText, 
@@ -9,63 +9,153 @@ import {
   translationFailure,
   addToHistory
 } from '../features/translation/translationSlice';
-import { translateText } from '../services/translationService';
+import { translateText, speechToSpeech, translateAndSpeak } from '../services/translationService';
 import { RootState } from '../store';
-import { v4 as uuidv4 } from 'uuid';
-import { Upload, Plus, History, Mic } from 'lucide-react';
+import { Upload, Plus, History, Mic, Pause } from 'lucide-react';
 import LanguageSwitch from '../components/ui/LanguageSwitch';
+import AudioControls from '../components/ui/AudioControls';
+import AudioWaveform from '../components/ui/AudioWaveform';
 
 const Translation: React.FC = () => {
   const dispatch = useDispatch();
   const { currentTranslation } = useSelector((state: RootState) => state.translation);
-  const [isRecording, setIsRecording] = useState(false); 
+  const { user } = useSelector((state: RootState) => state.auth);
   
-  const handleTranslate = useCallback(async (text: string) => {
-    if (!text.trim()) {
-      dispatch(setTranslatedText('')); 
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioURL, setAudioURL] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  const mediaRecorder = useRef<MediaRecorder | null>(null);
+  const audioChunks = useRef<Blob[]>([]);
+  const audioElement = useRef<HTMLAudioElement | null>(null);
+  
+  useEffect(() => {
+    // Initialize audio element
+    audioElement.current = new Audio();
+    audioElement.current.onended = () => setIsPlaying(false);
+    
+    return () => {
+      if (audioElement.current) {
+        audioElement.current.pause();
+        audioElement.current = null;
+      }
+    };
+  }, []);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder.current = new MediaRecorder(stream);
+      audioChunks.current = [];
+
+      mediaRecorder.current.ondataavailable = (event) => {
+        audioChunks.current.push(event.data);
+      };
+
+      mediaRecorder.current.onstop = async () => {
+        const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' });
+        if (user?.id) {
+          try {
+            const result = await speechToSpeech(
+              audioBlob,
+              currentTranslation.sourceLanguage,
+              currentTranslation.targetLanguage,
+              user.id
+            );
+            
+            dispatch(setSourceText(result.originalText));
+            dispatch(setTranslatedText(result.translatedText));
+            setAudioURL(result.audio);
+          } catch (error) {
+            console.error('Speech to speech translation failed:', error);
+          }
+        }
+      };
+
+      mediaRecorder.current.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
+      mediaRecorder.current.stop();
+      setIsRecording(false);
+      
+      // Stop all tracks on the stream
+      mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
+    }
+  };
+
+  const handleTextInput = useCallback(async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    dispatch(setSourceText(text));
+    
+    if (!text.trim() || !user?.id) {
+      dispatch(setTranslatedText(''));
       return;
     }
 
     try {
       dispatch(startTranslation());
-      
       const translatedText = await translateText(
         text,
         currentTranslation.sourceLanguage,
-        currentTranslation.targetLanguage
+        currentTranslation.targetLanguage,
+        user.id
       );
-      
       dispatch(translationSuccess(translatedText));
-      
-      // Add to history only after successful translation
-      dispatch(addToHistory({
-        id: uuidv4(),
-        sourceText: text,
-        translatedText,
-        sourceLanguage: currentTranslation.sourceLanguage,
-        targetLanguage: currentTranslation.targetLanguage,
-        timestamp: new Date().toISOString(),
-        mode: 'text-to-text'
-      }));
-      
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Translation failed';
       dispatch(translationFailure(errorMessage));
-      console.error('Translation error:', errorMessage); 
     }
-  }, [dispatch, currentTranslation.sourceLanguage, currentTranslation.targetLanguage]);
-
-  const handleTextInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = e.target.value;
-    dispatch(setSourceText(text));
-    handleTranslate(text); 
-  }, [dispatch, handleTranslate]);
+  }, [dispatch, currentTranslation.sourceLanguage, currentTranslation.targetLanguage, user]);
 
   const handleLanguageSwitch = useCallback(() => {
     dispatch(swapLanguages());
   }, [dispatch]);
 
-  // DESIGN REMAINS IDENTICAL
+  const handlePlayPause = useCallback(() => {
+    if (!audioElement.current || !audioURL) return;
+
+    if (isPlaying) {
+      audioElement.current.pause();
+    } else {
+      audioElement.current.src = audioURL;
+      audioElement.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  }, [isPlaying, audioURL]);
+
+  const handleReset = useCallback(() => {
+    setAudioURL(null);
+    setIsPlaying(false);
+    if (audioElement.current) {
+      audioElement.current.pause();
+      audioElement.current.src = '';
+    }
+  }, []);
+
+  const handleUpload = useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      const result = await translateAndSpeak(
+        currentTranslation.sourceText,
+        currentTranslation.sourceLanguage,
+        currentTranslation.targetLanguage,
+        user.id
+      );
+      
+      setAudioURL(result.audio);
+      dispatch(setTranslatedText(result.translatedText));
+    } catch (error) {
+      console.error('Translation and speech generation failed:', error);
+    }
+  }, [currentTranslation, user]);
+
   return (
     <div className="min-h-screen bg-[#121212] text-[#F5F5F5] flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
@@ -83,13 +173,23 @@ const Translation: React.FC = () => {
               value={currentTranslation.sourceText}
               onChange={handleTextInput}
             />
-            <button 
-              className="absolute bottom-4 right-4 text-[#BB86FC] hover:opacity-80 transition-opacity"
-              onClick={() => setIsRecording(!isRecording)}
-              aria-label={isRecording ? "Stop recording" : "Start recording"}
-            >
-              <Mic size={24} className={isRecording ? 'text-[#BB86FC]' : 'text-[#BB86FC] opacity-60'} />
-            </button>
+            <AudioControls
+              onStartRecording={startRecording}
+              onStopRecording={stopRecording}
+              onPlay={handlePlayPause}
+              onReset={handleReset}
+              onUpload={handleUpload}
+              isRecording={isRecording}
+              isPlaying={isPlaying}
+              hasRecording={!!audioURL}
+            />
+            {isRecording && (
+              <AudioWaveform
+                isActive={true}
+                size="md"
+                className="absolute bottom-20 left-1/2 transform -translate-x-1/2"
+              />
+            )}
           </div>
 
           <LanguageSwitch
@@ -112,7 +212,7 @@ const Translation: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Buttons (Unchanged) */}
+        {/* Action Buttons */}
         <div className="flex items-center justify-center space-x-12 mt-16">
           <button className="group flex flex-col items-center">
             <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">

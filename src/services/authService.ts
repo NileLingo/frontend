@@ -1,60 +1,58 @@
 import { User } from '../types';
 
-// Mock authentication service until backend integration
-export const loginUser = async (username: string, password: string): Promise<User> => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // Simulate validation
-  if (!username || !password) {
-    throw new Error('Username and password are required');
-  }
-  
-  if (password.length < 6) {
-    throw new Error('Invalid credentials');
-  }
-  
-  // Return mock user data
-  return {
-    id: '1',
-    username: username,
-    email: `${username}@example.com`
-  };
+const API_URL = 'https://cf22-34-127-84-184.ngrok-free.app';
+
+const headers = {
+  'Content-Type': 'application/json',
+  'ngrok-skip-browser-warning': 'true'
 };
 
-export const registerUser = async (
-  username: string, 
-  email: string, 
-  password: string
-): Promise<User> => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Simulate validation
-  if (!username || !email || !password) {
-    throw new Error('All fields are required');
+export const loginUser = async (email: string, password: string): Promise<User> => {
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Login failed');
+    }
+
+    const data = await response.json();
+    return {
+      id: data.user_id,
+      username: email.split('@')[0], // Using email prefix as username for now
+      email
+    };
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
   }
-  
-  if (password.length < 6) {
-    throw new Error('Password must be at least 6 characters');
-  }
-  
-  if (!email.includes('@')) {
-    throw new Error('Invalid email format');
-  }
-  
-  // Return mock user data for newly registered user
-  return {
-    id: Math.random().toString(36).substring(2, 11),
-    username,
-    email
-  };
 };
 
-export const logoutUser = async (): Promise<void> => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  // In a real app, this would clear the session with the backend
-  return;
+export const registerUser = async (username: string, email: string, password: string): Promise<User> => {
+  try {
+    const response = await fetch(`${API_URL}/register`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Registration failed');
+    }
+
+    const data = await response.json();
+    return {
+      id: data.user_id,
+      username,
+      email
+    };
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
+  }
 };
