@@ -1,10 +1,14 @@
+import axios from "axios";
 import { Language } from "../types";
 
-const API_URL = "https://cf22-34-127-84-184.ngrok-free.app";
+const API_URL = "https://8fdf-34-125-131-93.ngrok-free.app";
 
-const headers = {
-  "ngrok-skip-browser-warning": "true",
-};
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "ngrok-skip-browser-warning": "true",
+  },
+});
 
 export const translateText = async (
   text: string,
@@ -13,29 +17,28 @@ export const translateText = async (
   userId: string
 ) => {
   try {
-    const response = await fetch(`${API_URL}/translate-text`, {
-      method: "POST",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text,
-        src_lang: srcLang === "ENG" ? "en" : "ar",
-        tgt_lang: tgtLang === "ENG" ? "en" : "ar",
-        user_id: userId,
-      }),
+    const response = await axiosInstance.post("/translate-text", {
+      text,
+      src_lang: srcLang === "ENG" ? "en" : "ar",
+      tgt_lang: tgtLang === "ENG" ? "en" : "ar",
+      user_id: userId,
     });
 
-    if (!response.ok) {
-      throw new Error("Translation failed");
-    }
-
-    const data = await response.json();
-    return data.translated_text;
+    return response.data.translated_text;
   } catch (error) {
     console.error("Translation error:", error);
     throw error;
+  }
+};
+
+// Helper function to decode base64
+const decodeBase64 = (encodedString: string): string => {
+  try {
+    // First decode the base64 to get the UTF-8 bytes, then decode those bytes to a string
+    return decodeURIComponent(escape(atob(encodedString)));
+  } catch (error) {
+    console.error("Error decoding base64 string:", error);
+    return encodedString; // Return original if decoding fails
   }
 };
 
@@ -46,31 +49,25 @@ export const translateAndSpeak = async (
   userId: string
 ) => {
   try {
-    const response = await fetch(`${API_URL}/translate-and-speak`, {
-      method: "POST",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const response = await axiosInstance.post(
+      "/translate-and-speak",
+      {
         text,
         src_lang: srcLang === "ENG" ? "en" : "ar",
         tgt_lang: tgtLang === "ENG" ? "en" : "ar",
         user_id: userId,
-      }),
-    });
+      },
+      {
+        responseType: "blob",
+      }
+    );
 
-    if (!response.ok) {
-      throw new Error("Translation and speech generation failed");
-    }
-
-    const audioBlob = await response.blob();
-    const translatedText = response.headers.get("Translated-Text");
-    const translationId = response.headers.get("Translation-Id");
+    const translatedText = response.headers["translated-text"];
+    const translationId = response.headers["translation-id"];
 
     return {
-      audio: URL.createObjectURL(audioBlob),
-      translatedText: translatedText ? atob(translatedText) : "",
+      audio: URL.createObjectURL(response.data),
+      translatedText: translatedText ? decodeBase64(translatedText) : "",
       translationId,
     };
   } catch (error) {
@@ -92,27 +89,21 @@ export const speechToSpeech = async (
     formData.append("tgt_lang", tgtLang === "ENG" ? "en" : "ar");
     formData.append("user_id", userId);
 
-    const response = await fetch(`${API_URL}/speech-to-speech`, {
-      method: "POST",
+    const response = await axiosInstance.post("/speech-to-speech", formData, {
       headers: {
-        ...headers,
+        "Content-Type": "multipart/form-data",
       },
-      body: formData,
+      responseType: "blob",
     });
 
-    if (!response.ok) {
-      throw new Error("Speech-to-speech translation failed");
-    }
-
-    const responseAudioBlob = await response.blob();
-    const originalText = response.headers.get("Original-Text");
-    const translatedText = response.headers.get("Translated-Text");
-    const translationId = response.headers.get("Translation-Id");
-
+    const originalText = response.headers["original-text"];
+    const translatedText = response.headers["translated-text"];
+    const translationId = response.headers["translation-id"];
+    console.log("originalText", originalText);
     return {
-      audio: URL.createObjectURL(responseAudioBlob),
-      originalText: originalText ? atob(originalText) : "",
-      translatedText: translatedText ? atob(translatedText) : "",
+      audio: URL.createObjectURL(response.data),
+      originalText: originalText ? decodeBase64(originalText) : "",
+      translatedText: translatedText ? decodeBase64(translatedText) : "",
       translationId,
     };
   } catch (error) {
@@ -123,23 +114,18 @@ export const speechToSpeech = async (
 
 export const generateSpeech = async (text: string, language: Language) => {
   try {
-    const response = await fetch(`${API_URL}/generate-speech`, {
-      method: "POST",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const response = await axiosInstance.post(
+      "/generate-speech",
+      {
         text,
         output_lang: language === "ENG" ? "en" : "ar",
-      }),
-    });
+      },
+      {
+        responseType: "blob",
+      }
+    );
 
-    if (!response.ok) {
-      throw new Error("Speech generation failed");
-    }
-
-    const audioBlob = await response.blob();
+    const audioBlob = response.data;
     return URL.createObjectURL(audioBlob);
   } catch (error) {
     console.error("Speech generation error:", error);
@@ -153,20 +139,13 @@ export const transcribeAudio = async (audioBlob: Blob, language: Language) => {
     formData.append("file", audioBlob);
     formData.append("output_lang", language === "ENG" ? "en" : "ar");
 
-    const response = await fetch(`${API_URL}/transcribe`, {
-      method: "POST",
+    const response = await axiosInstance.post("/transcribe", formData, {
       headers: {
-        ...headers,
+        "Content-Type": "multipart/form-data",
       },
-      body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error("Audio transcription failed");
-    }
-
-    const data = await response.json();
-    return data.transcription;
+    return response.data.transcription;
   } catch (error) {
     console.error("Transcription error:", error);
     throw error;
@@ -175,18 +154,8 @@ export const transcribeAudio = async (audioBlob: Blob, language: Language) => {
 
 export const getUserTranslations = async (userId: string) => {
   try {
-    const response = await fetch(`${API_URL}/user/${userId}/translations`, {
-      headers: {
-        ...headers,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch translations");
-    }
-
-    const data = await response.json();
-    return data.translations;
+    const response = await axiosInstance.get(`/user/${userId}/translations`);
+    return response.data.translations;
   } catch (error) {
     console.error("Get translations error:", error);
     throw error;
@@ -198,22 +167,10 @@ export const toggleTranslationFavorite = async (
   translationId: string
 ) => {
   try {
-    const response = await fetch(
-      `${API_URL}/user/${userId}/translations/${translationId}/toggle-favorite`,
-      {
-        method: "PUT",
-        headers: {
-          ...headers,
-        },
-      }
+    const response = await axiosInstance.put(
+      `/user/${userId}/translations/${translationId}/toggle-favorite`
     );
-
-    if (!response.ok) {
-      throw new Error("Failed to toggle favorite status");
-    }
-
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Toggle favorite error:", error);
     throw error;

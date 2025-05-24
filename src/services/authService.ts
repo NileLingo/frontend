@@ -1,58 +1,77 @@
-import { User } from '../types';
+import axios from "axios";
+import { User } from "../types";
 
-const API_URL = 'https://cf22-34-127-84-184.ngrok-free.app';
+const API_URL = "https://8fdf-34-125-131-93.ngrok-free.app";
 
-const headers = {
-  'Content-Type': 'application/json',
-  'ngrok-skip-browser-warning': 'true'
-};
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
+  },
+});
 
-export const loginUser = async (email: string, password: string): Promise<User> => {
+export const loginUser = async (
+  email: string,
+  password: string
+): Promise<User> => {
   try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ email, password }),
-    });
+    const response = await axiosInstance.post("/login", { email, password });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Login failed');
-    }
-
-    const data = await response.json();
-    return {
-      id: data.user_id,
-      username: email.split('@')[0], // Using email prefix as username for now
-      email
+    const user = {
+      id: response.data.user_id,
+      username: email.split("@")[0],
+      email,
     };
+
+    // Store user data in localStorage
+    localStorage.setItem("user", JSON.stringify(user));
+    return user;
   } catch (error) {
-    console.error('Login error:', error);
+    if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.detail || "Login failed";
+      console.error("Login error:", errorMessage);
+      throw new Error(errorMessage);
+    }
+    console.error("Login error:", error);
     throw error;
   }
 };
 
-export const registerUser = async (username: string, email: string, password: string): Promise<User> => {
+export const registerUser = async (
+  username: string,
+  email: string,
+  password: string
+): Promise<User> => {
   try {
-    const response = await fetch(`${API_URL}/register`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ username, email, password }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Registration failed');
-    }
-
-    const data = await response.json();
-    return {
-      id: data.user_id,
+    const response = await axiosInstance.post("/register", {
       username,
-      email
+      email,
+      password,
+    });
+
+    const user = {
+      id: response.data.user_id,
+      username,
+      email,
     };
+
+    // Store user data in localStorage
+    localStorage.setItem("user", JSON.stringify(user));
+    return user;
   } catch (error) {
-    console.error('Registration error:', error);
+    if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.detail || "Registration failed";
+      console.error("Registration error:", errorMessage);
+      throw new Error(errorMessage);
+    }
+    console.error("Registration error:", error);
     throw error;
   }
+};
+
+export const logoutUser = () => {
+  localStorage.removeItem("user");
 };

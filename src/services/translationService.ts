@@ -5,6 +5,7 @@ import {
   speechToSpeech,
   generateSpeech,
   transcribeAudio,
+  getUserTranslations,
 } from "./api";
 
 export {
@@ -13,4 +14,5 @@ export {
   speechToSpeech,
   generateSpeech,
   transcribeAudio,
+  getUserTranslations,
 };

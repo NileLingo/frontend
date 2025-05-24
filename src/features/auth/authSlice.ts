@@ -1,9 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, User } from '../../types';
 
+// Initialize state with user from localStorage if available
+const storedUser = localStorage.getItem('user');
+const initialUser = storedUser ? JSON.parse(storedUser) : null;
+
 const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
+  user: initialUser,
+  isAuthenticated: !!initialUser,
   isLoading: false,
   error: null,
 };
@@ -29,6 +33,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+      localStorage.removeItem('user');
     },
     registerStart: (state) => {
       state.isLoading = true;
