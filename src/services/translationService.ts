@@ -1,4 +1,3 @@
-import { Language, TranslationMode } from "../types";
 import {
   translateText,
   translateAndSpeak,

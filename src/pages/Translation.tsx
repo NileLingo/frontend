@@ -7,18 +7,12 @@ import {
   swapLanguages, 
   startTranslation, 
   translationSuccess, 
-  translationFailure,
-  addToHistory
-} from '../features/translation/translationSlice';
-import { translateAndSpeak, speechToSpeech, getUserTranslations } from '../services/translationService';
+  translationFailure} from '../features/translation/translationSlice';
+import { translateAndSpeak, speechToSpeech } from '../services/translationService';
 import { RootState } from '../store';
-import { Upload, Plus, History as HistoryIcon, Mic, Pause, Volume2, Send } from 'lucide-react';
+import { Upload, Plus, History as HistoryIcon, Mic, Volume2, Send } from 'lucide-react';
 import LanguageSwitch from '../components/ui/LanguageSwitch';
-import AudioControls from '../components/ui/AudioControls';
 import AudioWaveform from '../components/ui/AudioWaveform';
-import TranslationHistory from '../components/ui/TranslationHistory';
-import Button from '../components/ui/Button';
-import { TranslationItem } from '../types';
 
 const Translation: React.FC = () => {
   const navigate = useNavigate();
@@ -29,8 +23,6 @@ const Translation: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [translations, setTranslations] = useState<TranslationItem[]>([]);
   
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
@@ -53,16 +45,6 @@ const Translation: React.FC = () => {
       }
     };
   }, [isAuthenticated, navigate]);
-
-  const loadTranslationHistory = async () => {
-    if (!user?.id) return;
-    try {
-      const history = await getUserTranslations(user.id);
-      setTranslations(history);
-    } catch (error) {
-      console.error('Failed to load translation history:', error);
-    }
-  };
 
   const startRecording = async () => {
     try {
@@ -150,15 +132,6 @@ const Translation: React.FC = () => {
     setIsPlaying(!isPlaying);
   }, [isPlaying, audioURL]);
 
-  const handleReset = useCallback(() => {
-    setAudioURL(null);
-    setIsPlaying(false);
-    if (audioElement.current) {
-      audioElement.current.pause();
-      audioElement.current.src = '';
-    }
-  }, []);
-
   const handleUpload = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
@@ -183,14 +156,6 @@ const Translation: React.FC = () => {
     }
   };
 
-  const playHistoryAudio = (audioUrl: string) => {
-    if (audioElement.current) {
-      audioElement.current.src = audioUrl;
-      audioElement.current.play();
-      setIsPlaying(true);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#121212] text-[#F5F5F5] flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
@@ -208,24 +173,20 @@ const Translation: React.FC = () => {
               value={currentTranslation.sourceText}
               onChange={handleTextInput}
             />
-            <Button
-              onClick={handleTranslateSubmit}
-              variant="primary"
-              className="absolute bottom-4 right-4 flex items-center gap-2"
-            >
-              <Send size={16} />
-              Translate
-            </Button>
-            <AudioControls
-              onStartRecording={startRecording}
-              onStopRecording={stopRecording}
-              onPlay={handlePlayPause}
-              onReset={handleReset}
-              onUpload={handleUpload}
-              isRecording={isRecording}
-              isPlaying={isPlaying}
-              hasRecording={!!audioURL}
-            />
+            <div className="absolute bottom-4 right-4 flex items-center gap-3">
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                className="text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
+              >
+                <Mic size={24} className={isRecording ? "animate-pulse" : ""} />
+              </button>
+              <button
+                onClick={handleTranslateSubmit}
+                className="text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
+              >
+                <Send size={24} />
+              </button>
+            </div>
             {isRecording && (
               <AudioWaveform
                 isActive={true}
@@ -284,7 +245,7 @@ const Translation: React.FC = () => {
           
           <button 
             className="group flex flex-col items-center"
-            onClick={() => setShowHistory(!showHistory)}
+            onClick={() => navigate('/history')}
           >
             <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
               <HistoryIcon className="w-5 h-5 text-[#BB86FC]" />
@@ -301,18 +262,6 @@ const Translation: React.FC = () => {
           accept="audio/*"
           onChange={handleFileUpload}
         />
-
-        {/* Translation History Modal */}
-        {showHistory && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="w-full max-w-3xl">
-              <TranslationHistory 
-                translations={translations}
-                onPlayAudio={playHistoryAudio}
-              />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
