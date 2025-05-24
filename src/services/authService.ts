@@ -1,7 +1,8 @@
 import axios from "axios";
 import { User } from "../types";
+import { api_url } from "../utils/constants";
 
-const API_URL = "https://8fdf-34-125-131-93.ngrok-free.app";
+const API_URL = api_url;
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -29,8 +30,7 @@ export const loginUser = async (
     return user;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const errorMessage =
-        error.response?.data?.detail || "Login failed";
+      const errorMessage = error.response?.data?.detail || "Login failed";
       console.error("Login error:", errorMessage);
       throw new Error(errorMessage);
     }
