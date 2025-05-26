@@ -6,6 +6,7 @@ import { RootState } from "../../store";
 import { logout } from "../../features/auth/authSlice";
 import { LogOut, Menu, X } from "lucide-react";
 import Button from "./Button";
+import LanguageSelector from "./LanguageSelector";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const Navbar: React.FC = () => {
         </h1>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center space-x-8">
+        <div className="hidden lg:flex items-center space-x-8 rtl:space-x-reverse">
           <a
             href="#research"
             className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
@@ -57,7 +58,8 @@ const Navbar: React.FC = () => {
           </a>
         </div>
 
-        <div className="hidden lg:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center space-x-4 rtl:space-x-reverse">
+          <LanguageSelector />
           <Button variant="primary" onClick={() => navigate("/translate")}>
             {t("common.tryNow")}
           </Button>
@@ -69,7 +71,10 @@ const Navbar: React.FC = () => {
               onClick={handleLogout}
               className="flex items-center text-[#F5F5F5] hover:text-[#BB86FC]"
             >
-              <LogOut size={16} className="rtl-flip text-[#BB86FC] me-1" />
+              <LogOut
+                size={16}
+                className="rtl:transform rtl:rotate-180 text-[#BB86FC] me-1"
+              />
               {t("common.logout")}
             </Button>
           )}
@@ -89,6 +94,7 @@ const Navbar: React.FC = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#1E1E1E] px-4 py-6">
           <div className="flex flex-col space-y-6">
+            <LanguageSelector />
             <a
               href="#research"
               className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
@@ -125,7 +131,7 @@ const Navbar: React.FC = () => {
                   navigate("/translate");
                   setMobileMenuOpen(false);
                 }}
-                className="justify-center"
+                className="justify-center w-full"
               >
                 {t("common.tryNow")}
               </Button>
@@ -138,9 +144,12 @@ const Navbar: React.FC = () => {
                     handleLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center justify-center mt-4 text-[#F5F5F5] hover:text-[#BB86FC]"
+                  className="flex items-center justify-center mt-4 text-[#F5F5F5] hover:text-[#BB86FC] w-full"
                 >
-                  <LogOut size={16} className="rtl-flip text-[#BB86FC] me-1" />
+                  <LogOut
+                    size={16}
+                    className="rtl:transform rtl:rotate-180 text-[#BB86FC] me-1"
+                  />
                   {t("common.logout")}
                 </Button>
               )}

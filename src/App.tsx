@@ -18,7 +18,6 @@ import Register from "./pages/Register";
 import Translation from "./pages/Translation";
 import History from "./pages/History";
 import Navbar from "./components/ui/Navbar";
-import LanguageSelector from "./components/ui/LanguageSelector";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -46,7 +45,6 @@ function AppContent() {
 
   return (
     <>
-      <LanguageSelector />
       {shouldShowNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />

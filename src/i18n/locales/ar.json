@@ -1,25 +1,27 @@
 {
   "common": {
-    "tryNow": "جرب الآن !",
+    "tryNow": "جرّب دلوقتي!",
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
     "register": "تسجيل",
-    "email": "البريد الإلكتروني",
-    "password": "كلمة المرور",
-    "confirmPassword": "تأكيد كلمة المرور",
+    "email": "الإيميل",
+    "password": "كلمة السر",
+    "confirmPassword": "تأكيد كلمة السر",
     "username": "اسم المستخدم",
-    "forgotPassword": "نسيت كلمة المرور؟",
-    "dontHaveAccount": "ليس لديك حساب؟",
-    "alreadyHaveAccount": "لديك حساب بالفعل؟",
-    "signUp": "إنشاء حساب",
-    "createAccount": "إنشاء حساب",
+    "forgotPassword": "نسيت كلمة السر؟",
+    "dontHaveAccount": "لسه ماعندكش حساب؟",
+    "alreadyHaveAccount": "عندك حساب بالفعل؟",
+    "signUp": "سجل حساب",
+    "createAccount": "سجل حساب",
     "error": "خطأ",
     "success": "نجاح",
     "cancel": "إلغاء",
     "save": "حفظ",
     "delete": "حذف",
     "edit": "تعديل",
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "welcomeBack": "أهلاً بيك تاني",
+    "helloFriend": "أهلاً بيك"
   },
   "nav": {
     "research": "البحث",
@@ -29,50 +31,57 @@
   },
   "home": {
     "hero": {
-      "title": "تخطى حواجز اللغة فوراً!",
-      "subtitle": "ترجم بين العربية المصرية والإنجليزية بدقة مدعومة بالذكاء الاصطناعي"
+      "title": "عدّي حدود اللغة في ثواني!",
+      "subtitle": "ترجم بين العربي المصري والإنجليزي بدقة مدعومة بالذكاء الاصطناعي"
     },
     "features": {
       "aiAccuracy": {
-        "title": "دقة مدعومة بالذكاء الاصطناعي",
-        "description": "محرك الترجمة مدرب على مجموعات بيانات كبيرة لضمان ترجمات دقيقة بين العربية المصرية والإنجليزية."
+        "title": "دقة بالذكاء الاصطناعي",
+        "description": "محرك الترجمة مدرب على مجموعات بيانات ضخمة عشان يضمنلك ترجمات دقيقة بين العربي المصري والإنجليزي."
       },
       "textToSpeech": {
-        "title": "دعم تحويل النص إلى كلام",
-        "description": "يمكن للمستخدمين الاستماع إلى النص المدخل والترجمة باستخدام تقنية تحويل النص إلى كلام المدعومة بالذكاء الاصطناعي، مما يساعد في النطق والتعلم."
+        "title": "دعم تحويل النص لصوت",
+        "description": "تقدر تسمع النص اللي كتبته أو ترجمته بصوت واضح ومدعوم بالذكاء الاصطناعي، عشان يساعدك في النطق والتعلم."
       }
     }
   },
   "translation": {
     "typeHere": "اكتب هنا ..",
-    "translationWillAppear": "ستظهر الترجمة هنا",
-    "uploadAudio": "رفع ملف صوتي",
-    "joinRoom": "انضم إلى غرفة",
+    "translationWillAppear": "الترجمة هتظهر هنا",
+    "uploadAudio": "ارفع ملف صوتي",
+    "joinRoom": "انضم لجروب",
     "history": "السجل",
-    "translating": "جاري الترجمة...",
+    "translating": "جارى الترجمة...",
     "clearText": "مسح النص",
-    "startRecording": "بدء التسجيل",
-    "stopRecording": "إيقاف التسجيل",
+    "startRecording": "ابدأ التسجيل",
+    "stopRecording": "وقف التسجيل",
     "playAudio": "تشغيل الصوت",
-    "pauseAudio": "إيقاف الصوت مؤقتاً"
+    "pauseAudio": "وقف الصوت مؤقتاً"
   },
   "history": {
     "title": "سجل الترجمة",
     "showAll": "عرض الكل",
-    "showFavorites": "عرض المفضلة",
-    "noFavorites": "لا توجد ترجمات مفضلة بعد",
-    "noTranslations": "لا توجد ترجمات بعد",
+    "showFavorites": "عرض المفضلات",
+    "noFavorites": "مافيش ترجمات مفضلة لسه",
+    "noTranslations": "مافيش ترجمات لسه",
     "playAudio": "تشغيل الصوت",
-    "addToFavorites": "إضافة إلى المفضلة",
-    "removeFromFavorites": "إزالة من المفضلة",
-    "sourceLanguage": "اللغة المصدر",
+    "addToFavorites": "ضيف للمفضلة",
+    "removeFromFavorites": "شيل من المفضلة",
+    "sourceLanguage": "اللغة الأصلية",
     "targetLanguage": "اللغة الهدف"
   },
   "errors": {
-    "microphoneAccess": "لا يمكن الوصول إلى الميكروفون. يرجى التحقق من الصلاحيات.",
-    "translationFailed": "فشلت الترجمة. يرجى المحاولة مرة أخرى.",
-    "audioProcessingFailed": "فشلت معالجة الملف الصوتي. يرجى المحاولة مرة أخرى.",
-    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
-    "networkError": "خطأ في الاتصال بالشبكة. يرجى المحاولة مرة أخرى."
+    "microphoneAccess": "مش قادر أوصل للمايك. اتأكد من الصلاحيات.",
+    "translationFailed": "حصلت مشكلة في الترجمة. حاول تاني.",
+    "audioProcessingFailed": "حصلت مشكلة في معالجة الصوت. حاول تاني.",
+    "invalidCredentials": "الإيميل أو كلمة السر غلط",
+    "networkError": "فيه مشكلة في الاتصال. حاول تاني.",
+    "usernameRequired": "اسم المستخدم مطلوب",
+    "emailRequired": "الإيميل مطلوب",
+    "emailInvalid": "الإيميل مش صحيح",
+    "passwordRequired": "كلمة السر مطلوبة",
+    "passwordLength": "كلمة السر لازم تكون 6 حروف أو أكتر",
+    "passwordMatch": "كلمات السر مش متطابقة",
+    "registrationFailed": "التسجيل فشل. حاول تاني."
   }
 }

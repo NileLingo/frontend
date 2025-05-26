@@ -19,7 +19,9 @@
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "welcomeBack": "Welcome Back",
+    "helloFriend": "Hello Friend"
   },
   "nav": {
     "research": "Research",
@@ -73,6 +75,13 @@
     "translationFailed": "Translation failed. Please try again.",
     "audioProcessingFailed": "Failed to process audio file. Please try again.",
     "invalidCredentials": "Invalid email or password",
-    "networkError": "Network error. Please try again."
+    "networkError": "Network error. Please try again.",
+    "usernameRequired": "Username is required",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Email is invalid",
+    "passwordRequired": "Password is required",
+    "passwordLength": "Password must be at least 6 characters",
+    "passwordMatch": "Passwords do not match",
+    "registrationFailed": "Registration failed. Please try again."
   }
 }

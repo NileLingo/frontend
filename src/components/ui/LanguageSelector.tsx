@@ -13,10 +13,10 @@ const LanguageSelector: React.FC = () => {
 
   return (
     <Button
-      variant="outline"
+      variant="text"
       size="sm"
       onClick={toggleLanguage}
-      className="fixed top-4 right-4 z-50"
+      className="text-[#F5F5F5] hover:text-[#BB86FC]"
     >
       {i18n.language === "en" ? "العربية" : "English"}
     </Button>

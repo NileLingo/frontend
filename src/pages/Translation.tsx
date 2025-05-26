@@ -33,7 +33,7 @@ import ErrorToast from "../components/ui/ErrorToast";
 const Translation: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { currentTranslation } = useSelector(
     (state: RootState) => state.translation
   );
@@ -51,6 +51,8 @@ const Translation: React.FC = () => {
   const audioChunks = useRef<Blob[]>([]);
   const audioElement = useRef<HTMLAudioElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isRTL = i18n.language === "ar";
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -226,7 +228,11 @@ const Translation: React.FC = () => {
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 relative">
           {/* Source Text Area */}
           <div className="relative">
-            <div className="absolute top-4 start-4 text-xl font-semibold">
+            <div
+              className={`absolute top-4 ${
+                isRTL ? "right-4" : "left-4"
+              } text-xl font-semibold`}
+            >
               {currentTranslation.sourceLanguage}
             </div>
             <textarea
@@ -235,17 +241,24 @@ const Translation: React.FC = () => {
               value={currentTranslation.sourceText}
               onChange={handleTextInput}
               onKeyDown={handleKeyDown}
+              dir={isRTL ? "rtl" : "ltr"}
             />
             {currentTranslation.sourceText && (
               <button
                 onClick={handleReset}
-                className="absolute top-4 end-4 text-[#757575] hover:text-[#BB86FC] transition-colors p-2"
+                className={`absolute top-4 ${
+                  isRTL ? "left-4" : "right-4"
+                } text-[#757575] hover:text-[#BB86FC] transition-colors p-2`}
                 aria-label={t("translation.clearText")}
               >
                 <X size={20} />
               </button>
             )}
-            <div className="absolute bottom-4 end-4 flex items-center gap-3">
+            <div
+              className={`absolute bottom-4 ${
+                isRTL ? "left-4" : "right-4"
+              } flex items-center gap-3`}
+            >
               <button
                 onClick={isRecording ? stopRecording : startRecording}
                 className="text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
@@ -261,7 +274,7 @@ const Translation: React.FC = () => {
                 onClick={handleTranslateSubmit}
                 className="text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
               >
-                <Send size={24} className="rtl-flip" />
+                <Send size={24} className={isRTL ? "scale-x-[-1]" : ""} />
               </button>
             </div>
             {isRecording && (
@@ -281,7 +294,11 @@ const Translation: React.FC = () => {
 
           {/* Target Text Area */}
           <div className="relative">
-            <div className="absolute top-4 start-4 text-xl font-semibold">
+            <div
+              className={`absolute top-4 ${
+                isRTL ? "right-4" : "left-4"
+              } text-xl font-semibold`}
+            >
               {currentTranslation.targetLanguage}
             </div>
             <textarea
@@ -289,11 +306,14 @@ const Translation: React.FC = () => {
               placeholder={t("translation.translationWillAppear")}
               value={currentTranslation.translatedText}
               readOnly
+              dir={isRTL ? "rtl" : "ltr"}
             />
             {audioURL && (
               <button
                 onClick={handlePlayPause}
-                className="absolute bottom-4 end-4 text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
+                className={`absolute bottom-4 ${
+                  isRTL ? "left-4" : "right-4"
+                } text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2`}
                 aria-label={t(
                   isPlaying ? "translation.pauseAudio" : "translation.playAudio"
                 )}
@@ -305,13 +325,13 @@ const Translation: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center space-x-12 mt-16">
+        <div className="flex items-center justify-center space-x-12 rtl:space-x-reverse mt-16">
           <button
             className="group flex flex-col items-center"
             onClick={handleUpload}
           >
             <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
-              <Upload className="w-5 h-5 text-[#BB86FC] rtl-flip" />
+              <Upload className={`w-5 h-5 text-[#BB86FC] `} />
             </div>
             <span className="text-sm text-[#757575]">
               {t("translation.uploadAudio")}
