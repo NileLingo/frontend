@@ -233,10 +233,10 @@ const Translation: React.FC = () => {
                 isRTL ? "right-4" : "left-4"
               } text-xl font-semibold`}
             >
-              {currentTranslation.sourceLanguage}
+              {t(`common.languages.${currentTranslation.sourceLanguage}`)}
             </div>
             <textarea
-              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none focus:ring-2 focus:ring-[#BB86FC] rtl:text-right"
+              className="w-full h-64 bg-[#1E1E1E] rounded-2xl py-12 px-4 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none focus:ring-2 focus:ring-[#BB86FC] rtl:text-right"
               placeholder={t("translation.typeHere")}
               value={currentTranslation.sourceText}
               onChange={handleTextInput}
@@ -299,10 +299,10 @@ const Translation: React.FC = () => {
                 isRTL ? "right-4" : "left-4"
               } text-xl font-semibold`}
             >
-              {currentTranslation.targetLanguage}
+              {t(`common.languages.${currentTranslation.targetLanguage}`)}
             </div>
             <textarea
-              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none rtl:text-right"
+              className="w-full h-64 bg-[#1E1E1E] rounded-2xl py-12 px-4 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none rtl:text-right"
               placeholder={t("translation.translationWillAppear")}
               value={currentTranslation.translatedText}
               readOnly
@@ -373,4 +373,4 @@ const Translation: React.FC = () => {
   );
 };
 
-export default Translation;
+export default Translation

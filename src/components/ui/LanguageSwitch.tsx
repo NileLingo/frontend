@@ -14,7 +14,13 @@ const LanguageSwitch: React.FC<LanguageSwitchProps> = ({
   return (
     <button 
       onClick={onSwitch}
-      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 p-3 rounded-full text-[#BB86FC] hover:bg-[#2A2A2A] transition-colors shadow-lg"
+      className="fixed-center p-3 rounded-full text-[#BB86FC] hover:bg-[#2A2A2A] transition-colors shadow-lg"
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)'
+      }}
     >
       <ArrowLeftRight size={24} />
     </button>

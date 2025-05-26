@@ -21,9 +21,14 @@
     "edit": "Edit",
     "loading": "Loading...",
     "welcomeBack": "Welcome Back",
-    "helloFriend": "Hello Friend"
+    "helloFriend": "Hello Friend",
+    "languages": {
+      "ENG": "ENG",
+      "EGY": "EGY"
+    }
   },
   "nav": {
+    "logo": "NILELINGO",
     "research": "Research",
     "products": "Products",
     "safety": "Safety",

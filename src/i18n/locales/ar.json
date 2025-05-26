@@ -21,9 +21,14 @@
     "edit": "تعديل",
     "loading": "جاري التحميل...",
     "welcomeBack": "ازيك !",
-    "helloFriend": "ازيك !"
+    "helloFriend": "ازيك !",
+    "languages": {
+      "ENG": "إنجلش",
+      "EGY": "مصري"
+    }
   },
   "nav": {
+    "logo": "نايلينجو",
     "research": "البحث",
     "products": "المنتجات",
     "safety": "الأمان",

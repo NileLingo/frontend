@@ -20,6 +20,13 @@ html[dir="rtl"] {
   direction: rtl;
 }
 
+/* Fixed center positioning */
+.fixed-center {
+  position: absolute;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 /* RTL specific margins and paddings */
 [dir="rtl"] .ml-auto {
   margin-left: unset;

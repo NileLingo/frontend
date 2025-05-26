@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
           className="text-lg sm:text-xl font-bold cursor-pointer"
           onClick={() => navigate("/")}
         >
-          NILELINGU
+          {t("nav.logo")}
         </h1>
 
         {/* Desktop Navigation */}
