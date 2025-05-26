@@ -12,7 +12,14 @@
     "dontHaveAccount": "ليس لديك حساب؟",
     "alreadyHaveAccount": "لديك حساب بالفعل؟",
     "signUp": "إنشاء حساب",
-    "createAccount": "إنشاء حساب"
+    "createAccount": "إنشاء حساب",
+    "error": "خطأ",
+    "success": "نجاح",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "loading": "جاري التحميل..."
   },
   "nav": {
     "research": "البحث",
@@ -42,7 +49,12 @@
     "uploadAudio": "رفع ملف صوتي",
     "joinRoom": "انضم إلى غرفة",
     "history": "السجل",
-    "translating": "جاري الترجمة..."
+    "translating": "جاري الترجمة...",
+    "clearText": "مسح النص",
+    "startRecording": "بدء التسجيل",
+    "stopRecording": "إيقاف التسجيل",
+    "playAudio": "تشغيل الصوت",
+    "pauseAudio": "إيقاف الصوت مؤقتاً"
   },
   "history": {
     "title": "سجل الترجمة",
@@ -50,6 +62,17 @@
     "showFavorites": "عرض المفضلة",
     "noFavorites": "لا توجد ترجمات مفضلة بعد",
     "noTranslations": "لا توجد ترجمات بعد",
-    "playAudio": "تشغيل الصوت"
+    "playAudio": "تشغيل الصوت",
+    "addToFavorites": "إضافة إلى المفضلة",
+    "removeFromFavorites": "إزالة من المفضلة",
+    "sourceLanguage": "اللغة المصدر",
+    "targetLanguage": "اللغة الهدف"
+  },
+  "errors": {
+    "microphoneAccess": "لا يمكن الوصول إلى الميكروفون. يرجى التحقق من الصلاحيات.",
+    "translationFailed": "فشلت الترجمة. يرجى المحاولة مرة أخرى.",
+    "audioProcessingFailed": "فشلت معالجة الملف الصوتي. يرجى المحاولة مرة أخرى.",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "networkError": "خطأ في الاتصال بالشبكة. يرجى المحاولة مرة أخرى."
   }
 }

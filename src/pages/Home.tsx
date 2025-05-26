@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import Button from "../components/ui/Button";
 import AudioWaveform from "../components/ui/AudioWaveform";
@@ -8,6 +9,7 @@ import { Play, Bot, Mic, Pause } from "lucide-react";
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-[#121212] text-[#F5F5F5] px-4 sm:px-8 md:px-12 lg:px-24 py-6">
@@ -18,17 +20,13 @@ const Home: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center lg:text-left"
+            className="text-center lg:text-start"
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-              Break Language
-              <br />
-              Barriers Instantly!
+              {t("home.hero.title")}
             </h2>
             <p className="text-lg sm:text-xl text-[#CCCCCC] mb-6 sm:mb-8">
-              Translate Egyptian Arabic to
-              <br />
-              English with AI-powered accuracy
+              {t("home.hero.subtitle")}
             </p>
             <div className="flex justify-center lg:justify-start">
               <Button
@@ -36,7 +34,7 @@ const Home: React.FC = () => {
                 size="lg"
                 onClick={() => navigate("/translate")}
               >
-                Try it now !
+                {t("common.tryNow")}
               </Button>
             </div>
           </motion.div>
@@ -52,7 +50,7 @@ const Home: React.FC = () => {
                 <button
                   onClick={() => setIsActive((prev) => !prev)}
                   className="focus:outline-none"
-                  aria-label={isActive ? "Pause" : "Play"}
+                  aria-label={isActive ? t("translation.pauseAudio") : t("translation.playAudio")}
                 >
                   {isActive ? (
                     <Pause size={32} className="text-[#BB86FC] animate-pulse" />
@@ -85,11 +83,12 @@ const Home: React.FC = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-12 gap-8 lg:gap-0">
-              <div className="max-w-md order-2 lg:order-1 text-center lg:text-left">
-                <h3 className="text-3xl sm:text-4xl font-bold mb-4">AI-Powered Accuracy</h3>
+              <div className="max-w-md order-2 lg:order-1 text-center lg:text-start">
+                <h3 className="text-3xl sm:text-4xl font-bold mb-4">
+                  {t("home.features.aiAccuracy.title")}
+                </h3>
                 <p className="text-[#CCCCCC]">
-                  The translation engine is trained on large datasets to ensure
-                  accurate translations between Egyptian Arabic and English.
+                  {t("home.features.aiAccuracy.description")}
                 </p>
               </div>
               <div className="w-40 h-40 sm:w-56 sm:h-56 bg-[#BB86FC] rounded-2xl flex items-center justify-center order-1 lg:order-2">
@@ -108,14 +107,12 @@ const Home: React.FC = () => {
               <div className="w-40 h-40 sm:w-56 sm:h-56 bg-[#BB86FC] rounded-2xl flex items-center justify-center lg:order-1">
                 <Mic size={80} className="text-white sm:w-100" />
               </div>
-              <div className="max-w-md lg:order-2 text-center lg:text-left">
+              <div className="max-w-md lg:order-2 text-center lg:text-start">
                 <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                  Text-to-Speech Support
+                  {t("home.features.textToSpeech.title")}
                 </h3>
                 <p className="text-[#CCCCCC]">
-                  Users can listen to both the input text and the translated
-                  output using AI-powered speech synthesis, helping with
-                  pronunciation and learning.
+                  {t("home.features.textToSpeech.description")}
                 </p>
               </div>
             </div>

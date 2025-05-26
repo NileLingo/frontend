@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   setSourceText,
   setTranslatedText,
@@ -32,6 +33,7 @@ import ErrorToast from "../components/ui/ErrorToast";
 const Translation: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { currentTranslation } = useSelector(
     (state: RootState) => state.translation
   );
@@ -102,11 +104,7 @@ const Translation: React.FC = () => {
             dispatch(setTranslatedText(result.translatedText));
             setAudioURL(result.audio);
           } catch (error) {
-            const errorMessage =
-              error instanceof Error
-                ? error.message
-                : "Failed to process speech. Please try again.";
-            setError(errorMessage);
+            setError(t("errors.audioProcessingFailed"));
             console.error("Speech to speech translation failed:", error);
           } finally {
             setIsLoading(false);
@@ -117,11 +115,7 @@ const Translation: React.FC = () => {
       mediaRecorder.current.start();
       setIsRecording(true);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Could not access microphone. Please check your permissions.";
-      setError(errorMessage);
+      setError(t("errors.microphoneAccess"));
       console.error("Error accessing microphone:", error);
     }
   };
@@ -163,10 +157,7 @@ const Translation: React.FC = () => {
       dispatch(translationSuccess(result.translatedText));
       setAudioURL(result.audio);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Translation failed. Please try again.";
+      const errorMessage = t("errors.translationFailed");
       dispatch(translationFailure(errorMessage));
       setError(errorMessage);
     } finally {
@@ -213,11 +204,7 @@ const Translation: React.FC = () => {
       dispatch(setTranslatedText(result.translatedText));
       setAudioURL(result.audio);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to process audio file. Please try again.";
-      setError(errorMessage);
+      setError(t("errors.audioProcessingFailed"));
       console.error("Audio upload failed:", error);
     } finally {
       setIsLoading(false);
@@ -226,7 +213,7 @@ const Translation: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#121212] text-[#F5F5F5] flex flex-col">
-      {isLoading && <LoadingScreen />}
+      {isLoading && <LoadingScreen message={t("translation.translating")} />}
       {error && (
         <ErrorToast
           message={error}
@@ -239,12 +226,12 @@ const Translation: React.FC = () => {
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 relative">
           {/* Source Text Area */}
           <div className="relative">
-            <div className="absolute top-4 left-4 text-xl font-semibold">
+            <div className="absolute top-4 start-4 text-xl font-semibold">
               {currentTranslation.sourceLanguage}
             </div>
             <textarea
-              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none focus:ring-2 focus:ring-[#BB86FC]"
-              placeholder="Type here .."
+              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none focus:ring-2 focus:ring-[#BB86FC] rtl:text-right"
+              placeholder={t("translation.typeHere")}
               value={currentTranslation.sourceText}
               onChange={handleTextInput}
               onKeyDown={handleKeyDown}
@@ -252,16 +239,21 @@ const Translation: React.FC = () => {
             {currentTranslation.sourceText && (
               <button
                 onClick={handleReset}
-                className="absolute top-4 right-4 text-[#757575] hover:text-[#BB86FC] transition-colors p-2"
-                aria-label="Clear text"
+                className="absolute top-4 end-4 text-[#757575] hover:text-[#BB86FC] transition-colors p-2"
+                aria-label={t("translation.clearText")}
               >
                 <X size={20} />
               </button>
             )}
-            <div className="absolute bottom-4 right-4 flex items-center gap-3">
+            <div className="absolute bottom-4 end-4 flex items-center gap-3">
               <button
                 onClick={isRecording ? stopRecording : startRecording}
                 className="text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
+                aria-label={t(
+                  isRecording
+                    ? "translation.stopRecording"
+                    : "translation.startRecording"
+                )}
               >
                 <Mic size={24} className={isRecording ? "animate-pulse" : ""} />
               </button>
@@ -269,7 +261,7 @@ const Translation: React.FC = () => {
                 onClick={handleTranslateSubmit}
                 className="text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
               >
-                <Send size={24} />
+                <Send size={24} className="rtl-flip" />
               </button>
             </div>
             {isRecording && (
@@ -289,19 +281,22 @@ const Translation: React.FC = () => {
 
           {/* Target Text Area */}
           <div className="relative">
-            <div className="absolute top-4 left-4 text-xl font-semibold">
+            <div className="absolute top-4 start-4 text-xl font-semibold">
               {currentTranslation.targetLanguage}
             </div>
             <textarea
-              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none"
-              placeholder="Translation will appear here"
+              className="w-full h-64 bg-[#1E1E1E] rounded-2xl p-12 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none rtl:text-right"
+              placeholder={t("translation.translationWillAppear")}
               value={currentTranslation.translatedText}
               readOnly
             />
             {audioURL && (
               <button
                 onClick={handlePlayPause}
-                className="absolute bottom-4 right-4 text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
+                className="absolute bottom-4 end-4 text-[#BB86FC] hover:text-[#A070DA] transition-colors p-2"
+                aria-label={t(
+                  isPlaying ? "translation.pauseAudio" : "translation.playAudio"
+                )}
               >
                 <Volume2 size={24} />
               </button>
@@ -316,16 +311,20 @@ const Translation: React.FC = () => {
             onClick={handleUpload}
           >
             <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
-              <Upload className="w-5 h-5 text-[#BB86FC]" />
+              <Upload className="w-5 h-5 text-[#BB86FC] rtl-flip" />
             </div>
-            <span className="text-sm text-[#757575]">Upload audio</span>
+            <span className="text-sm text-[#757575]">
+              {t("translation.uploadAudio")}
+            </span>
           </button>
 
           <button className="group flex flex-col items-center">
             <div className="w-16 h-16 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
               <Plus className="w-8 h-8 text-[#BB86FC]" />
             </div>
-            <span className="text-sm text-[#757575]">Join room</span>
+            <span className="text-sm text-[#757575]">
+              {t("translation.joinRoom")}
+            </span>
           </button>
 
           <button
@@ -335,7 +334,9 @@ const Translation: React.FC = () => {
             <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
               <HistoryIcon className="w-5 h-5 text-[#BB86FC]" />
             </div>
-            <span className="text-sm text-[#757575]">History</span>
+            <span className="text-sm text-[#757575]">
+              {t("translation.history")}
+            </span>
           </button>
         </div>
 

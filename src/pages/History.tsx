@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../store";
 import {
   getUserTranslations,
@@ -13,9 +14,8 @@ const History: React.FC = () => {
   const [translations, setTranslations] = useState<TranslationItem[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
-    null
-  );
+  const { t } = useTranslation();
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -74,8 +74,8 @@ const History: React.FC = () => {
     <div className="min-h-screen bg-[#121212] p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F5]">
-            Translation History
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F5] rtl:text-right">
+            {t("history.title")}
           </h1>
           <Button
             variant={showFavorites ? "primary" : "outline"}
@@ -83,15 +83,15 @@ const History: React.FC = () => {
             className="flex items-center gap-2"
           >
             <Heart size={16} className={showFavorites ? "fill-current" : ""} />
-            {showFavorites ? "Show All" : "Show Favorites"}
+            {showFavorites ? t("history.showAll") : t("history.showFavorites")}
           </Button>
         </div>
 
         {filteredTranslations.length === 0 ? (
           <p className="text-[#757575] text-center">
             {showFavorites
-              ? "No favorite translations yet"
-              : "No translations yet"}
+              ? t("history.noFavorites")
+              : t("history.noTranslations")}
           </p>
         ) : (
           <div className="space-y-4 sm:space-y-6">
@@ -99,15 +99,16 @@ const History: React.FC = () => {
               <div key={item.id} className="bg-[#1E1E1E] rounded-lg p-4 sm:p-6">
                 <div className="flex justify-between items-center mb-3 sm:mb-4">
                   <span className="text-xs sm:text-sm text-[#BB86FC]">
-                    {item.sourceLanguage} → {item.targetLanguage}
+                    {t("history.sourceLanguage")}: {item.sourceLanguage} →{" "}
+                    {t("history.targetLanguage")}: {item.targetLanguage}
                   </span>
                   <button
                     onClick={() => handleToggleFavorite(item.id)}
                     className={`text-[#BB86FC] hover:text-[#A070DA] transition-colors`}
                     aria-label={
                       item.favorite
-                        ? "Remove from favorites"
-                        : "Add to favorites"
+                        ? t("history.removeFromFavorites")
+                        : t("history.addToFavorites")
                     }
                   >
                     <Heart
@@ -118,10 +119,10 @@ const History: React.FC = () => {
                 </div>
 
                 <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
-                  <p className="text-sm sm:text-base text-[#F5F5F5]">
+                  <p className="text-sm sm:text-base text-[#F5F5F5] rtl:text-right">
                     {item.sourceText}
                   </p>
-                  <p className="text-sm sm:text-base text-[#CCCCCC]">
+                  <p className="text-sm sm:text-base text-[#CCCCCC] rtl:text-right">
                     {item.translatedText}
                   </p>
                 </div>
@@ -131,12 +132,13 @@ const History: React.FC = () => {
                     <button
                       onClick={() => playAudio(item.audioUrl!)}
                       className="text-[#BB86FC] hover:text-[#A070DA] transition-colors flex items-center gap-2 text-sm sm:text-base"
+                      aria-label={t("history.playAudio")}
                     >
                       <Volume2 size={14} className="sm:size-4" />
-                      Play Audio
+                      {t("history.playAudio")}
                     </button>
                   )}
-                  <p className="text-xs sm:text-sm text-[#757575] sm:ml-auto">
+                  <p className="text-xs sm:text-sm text-[#757575] sm:ms-auto rtl:text-right">
                     {new Date(item.timestamp).toLocaleString()}
                   </p>
                 </div>

@@ -31,17 +31,87 @@ html[dir="rtl"] {
   margin-left: auto;
 }
 
-[dir="rtl"] .ml-1 {
+[dir="rtl"] .ml-1,
+[dir="rtl"] .ms-1 {
   margin-left: unset;
   margin-right: 0.25rem;
 }
 
-[dir="rtl"] .mr-1 {
+[dir="rtl"] .mr-1,
+[dir="rtl"] .me-1 {
   margin-right: unset;
   margin-left: 0.25rem;
+}
+
+[dir="rtl"] .ml-2,
+[dir="rtl"] .ms-2 {
+  margin-left: unset;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .mr-2,
+[dir="rtl"] .me-2 {
+  margin-right: unset;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .ml-4,
+[dir="rtl"] .ms-4 {
+  margin-left: unset;
+  margin-right: 1rem;
+}
+
+[dir="rtl"] .mr-4,
+[dir="rtl"] .me-4 {
+  margin-right: unset;
+  margin-left: 1rem;
+}
+
+/* RTL Flexbox order */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .space-x-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
 }
 
 /* Font family for Arabic text */
 [dir="rtl"] {
   font-family: "Inter", "Noto Sans Arabic", system-ui, sans-serif;
+}
+
+/* RTL Grid */
+[dir="rtl"] .lg:col-start-1 {
+  grid-column-start: -1;
+}
+
+[dir="rtl"] .lg:col-start-2 {
+  grid-column-start: -2;
+}
+
+/* RTL Transforms */
+[dir="rtl"] .translate-x-1\/2 {
+  --tw-translate-x: -50%;
+}
+
+[dir="rtl"] .-translate-x-1\/2 {
+  --tw-translate-x: 50%;
+}
+
+/* RTL Text alignment */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
 }
