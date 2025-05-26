@@ -15,7 +15,9 @@ const History: React.FC = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
   const { t } = useTranslation();
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
+    null
+  );
 
   useEffect(() => {
     if (user?.id) {
@@ -99,8 +101,7 @@ const History: React.FC = () => {
               <div key={item.id} className="bg-[#1E1E1E] rounded-lg p-4 sm:p-6">
                 <div className="flex justify-between items-center mb-3 sm:mb-4">
                   <span className="text-xs sm:text-sm text-[#BB86FC]">
-                    {t("history.sourceLanguage")}: {item.sourceLanguage} →{" "}
-                    {t("history.targetLanguage")}: {item.targetLanguage}
+                    {item.sourceLanguage} → {item.targetLanguage}
                   </span>
                   <button
                     onClick={() => handleToggleFavorite(item.id)}
