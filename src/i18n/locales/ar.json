@@ -9,7 +9,7 @@
     "confirmPassword": "تأكيد كلمة السر",
     "username": "اسم المستخدم",
     "forgotPassword": "نسيت كلمة السر؟",
-    "dontHaveAccount": "لسه ماعندكش حساب؟",
+    "dontHaveAccount": " معندكش حساب؟",
     "alreadyHaveAccount": "عندك حساب بالفعل؟",
     "signUp": "سجل حساب",
     "createAccount": "سجل حساب",
@@ -20,8 +20,8 @@
     "delete": "حذف",
     "edit": "تعديل",
     "loading": "جاري التحميل...",
-    "welcomeBack": "أهلاً بيك تاني",
-    "helloFriend": "أهلاً بيك"
+    "welcomeBack": "ازيك !",
+    "helloFriend": "ازيك !"
   },
   "nav": {
     "research": "البحث",
