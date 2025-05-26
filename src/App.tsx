@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { useSelector } from "react-redux";
 import { RootState } from "./store";
+import { useTranslation } from "react-i18next";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -17,6 +18,7 @@ import Register from "./pages/Register";
 import Translation from "./pages/Translation";
 import History from "./pages/History";
 import Navbar from "./components/ui/Navbar";
+import LanguageSelector from "./components/ui/LanguageSelector";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -32,6 +34,11 @@ const GuestRoute = ({ children }: { children: React.ReactNode }) => {
 
 function AppContent() {
   const location = useLocation();
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
+  }, [i18n.language]);
 
   // Define routes where navbar should NOT appear
   const noNavbarRoutes = ["/login", "/register"];
@@ -39,6 +46,7 @@ function AppContent() {
 
   return (
     <>
+      <LanguageSelector />
       {shouldShowNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
@@ -74,7 +82,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/\" replace />} />
       </Routes>
     </>
   );

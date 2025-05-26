@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../store";
 import { logout } from "../../features/auth/authSlice";
 import { LogOut, Menu, X } from "lucide-react";
@@ -9,6 +10,7 @@ import Button from "./Button";
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -33,31 +35,31 @@ const Navbar: React.FC = () => {
             href="#research"
             className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
           >
-            Research
+            {t("nav.research")}
           </a>
           <a
             href="#products"
             className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
           >
-            Products
+            {t("nav.products")}
           </a>
           <a
             href="#safety"
             className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
           >
-            Safety
+            {t("nav.safety")}
           </a>
           <a
             href="#company"
             className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
           >
-            Company
+            {t("nav.company")}
           </a>
         </div>
 
         <div className="hidden lg:flex items-center space-x-4">
           <Button variant="primary" onClick={() => navigate("/translate")}>
-            Try it now !
+            {t("common.tryNow")}
           </Button>
 
           {user && (
@@ -67,8 +69,8 @@ const Navbar: React.FC = () => {
               onClick={handleLogout}
               className="flex items-center text-[#F5F5F5] hover:text-[#BB86FC]"
             >
-              <LogOut size={16} className="mr-1 text-[#BB86FC]" />
-              Logout
+              <LogOut size={16} className="rtl-flip text-[#BB86FC] me-1" />
+              {t("common.logout")}
             </Button>
           )}
         </div>
@@ -92,28 +94,28 @@ const Navbar: React.FC = () => {
               className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Research
+              {t("nav.research")}
             </a>
             <a
               href="#products"
               className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Products
+              {t("nav.products")}
             </a>
             <a
               href="#safety"
               className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Safety
+              {t("nav.safety")}
             </a>
             <a
               href="#company"
               className="text-[#F5F5F5] hover:text-[#BB86FC] transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Company
+              {t("nav.company")}
             </a>
 
             <div className="pt-4 border-t border-[#333]">
@@ -125,7 +127,7 @@ const Navbar: React.FC = () => {
                 }}
                 className="justify-center"
               >
-                Try it now !
+                {t("common.tryNow")}
               </Button>
 
               {user && (
@@ -138,8 +140,8 @@ const Navbar: React.FC = () => {
                   }}
                   className="flex items-center justify-center mt-4 text-[#F5F5F5] hover:text-[#BB86FC]"
                 >
-                  <LogOut size={16} className="mr-1 text-[#BB86FC]" />
-                  Logout
+                  <LogOut size={16} className="rtl-flip text-[#BB86FC] me-1" />
+                  {t("common.logout")}
                 </Button>
               )}
             </div>

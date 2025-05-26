@@ -13,7 +13,7 @@ const TextArea: React.FC<TextAreaProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'bg-[#1E1E1E] text-[#F5F5F5] placeholder-[#757575] rounded p-3 focus:outline-none focus:ring-1 focus:ring-[#BB86FC] transition-all resize-none';
+  const baseStyles = 'bg-[#1E1E1E] text-[#F5F5F5] placeholder-[#757575] rounded p-3 focus:outline-none focus:ring-1 focus:ring-[#BB86FC] transition-all resize-none rtl:text-right';
   const widthStyle = fullWidth ? 'w-full' : '';
   const errorStyles = error ? 'border-[#CF6679] focus:ring-[#CF6679]' : '';
   
@@ -22,14 +22,14 @@ const TextArea: React.FC<TextAreaProps> = ({
   return (
     <div className={`flex flex-col ${fullWidth ? 'w-full' : ''}`}>
       {label && (
-        <label className="mb-1 text-[#CCCCCC]">{label}</label>
+        <label className="mb-1 text-[#CCCCCC] rtl:text-right">{label}</label>
       )}
       <textarea
         className={combinedClassName}
         {...props}
       />
       {error && (
-        <p className="mt-1 text-sm text-[#CF6679]">{error}</p>
+        <p className="mt-1 text-sm text-[#CF6679] rtl:text-right">{error}</p>
       )}
     </div>
   );

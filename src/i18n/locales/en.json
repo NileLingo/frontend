@@ -1,0 +1,55 @@
+{
+  "common": {
+    "tryNow": "Try it now !",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "username": "Username",
+    "forgotPassword": "Forgot password?",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signUp": "Sign up",
+    "createAccount": "Create Account"
+  },
+  "nav": {
+    "research": "Research",
+    "products": "Products",
+    "safety": "Safety",
+    "company": "Company"
+  },
+  "home": {
+    "hero": {
+      "title": "Break Language Barriers Instantly!",
+      "subtitle": "Translate Egyptian Arabic to English with AI-powered accuracy"
+    },
+    "features": {
+      "aiAccuracy": {
+        "title": "AI-Powered Accuracy",
+        "description": "The translation engine is trained on large datasets to ensure accurate translations between Egyptian Arabic and English."
+      },
+      "textToSpeech": {
+        "title": "Text-to-Speech Support",
+        "description": "Users can listen to both the input text and the translated output using AI-powered speech synthesis, helping with pronunciation and learning."
+      }
+    }
+  },
+  "translation": {
+    "typeHere": "Type here ..",
+    "translationWillAppear": "Translation will appear here",
+    "uploadAudio": "Upload audio",
+    "joinRoom": "Join room",
+    "history": "History",
+    "translating": "Translating..."
+  },
+  "history": {
+    "title": "Translation History",
+    "showAll": "Show All",
+    "showFavorites": "Show Favorites",
+    "noFavorites": "No favorite translations yet",
+    "noTranslations": "No translations yet",
+    "playAudio": "Play Audio"
+  }
+}
