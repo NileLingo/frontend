@@ -123,7 +123,7 @@ const Navbar: React.FC = () => {
                   navigate("/translate");
                   setMobileMenuOpen(false);
                 }}
-                className="w-full justify-center"
+                className="justify-center"
               >
                 Try it now !
               </Button>
@@ -136,7 +136,7 @@ const Navbar: React.FC = () => {
                     handleLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center justify-center w-full mt-4 text-[#F5F5F5] hover:text-[#BB86FC]"
+                  className="flex items-center justify-center mt-4 text-[#F5F5F5] hover:text-[#BB86FC]"
                 >
                   <LogOut size={16} className="mr-1 text-[#BB86FC]" />
                   Logout

@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { getUserTranslations } from "../services/translationService";
+import {
+  getUserTranslations,
+  toggleTranslationFavorite,
+} from "../services/translationService";
 import { TranslationItem } from "../types";
-import { Volume2 } from "lucide-react";
+import { Volume2, Heart } from "lucide-react";
+import Button from "../components/ui/Button";
 
 const History: React.FC = () => {
   const [translations, setTranslations] = useState<TranslationItem[]>([]);
+  const [showFavorites, setShowFavorites] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
     null
@@ -38,6 +43,22 @@ const History: React.FC = () => {
     }
   };
 
+  const handleToggleFavorite = async (translationId: string) => {
+    if (!user?.id) return;
+    try {
+      await toggleTranslationFavorite(user.id, translationId);
+      setTranslations((prevTranslations) =>
+        prevTranslations.map((translation) =>
+          translation.id === translationId
+            ? { ...translation, favorite: !translation.favorite }
+            : translation
+        )
+      );
+    } catch (error) {
+      console.error("Failed to toggle favorite:", error);
+    }
+  };
+
   const playAudio = (audioUrl: string) => {
     if (audioElement) {
       audioElement.src = audioUrl;
@@ -45,42 +66,80 @@ const History: React.FC = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#121212] p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-[#F5F5F5] mb-8">
-          Translation History
-        </h1>
+  const filteredTranslations = showFavorites
+    ? translations.filter((item) => item.favorite)
+    : translations;
 
-        {translations.length === 0 ? (
-          <p className="text-[#757575] text-center">No translations yet</p>
+  return (
+    <div className="min-h-screen bg-[#121212] p-4 sm:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F5]">
+            Translation History
+          </h1>
+          <Button
+            variant={showFavorites ? "primary" : "outline"}
+            onClick={() => setShowFavorites(!showFavorites)}
+            className="flex items-center gap-2"
+          >
+            <Heart size={16} className={showFavorites ? "fill-current" : ""} />
+            {showFavorites ? "Show All" : "Show Favorites"}
+          </Button>
+        </div>
+
+        {filteredTranslations.length === 0 ? (
+          <p className="text-[#757575] text-center">
+            {showFavorites
+              ? "No favorite translations yet"
+              : "No translations yet"}
+          </p>
         ) : (
-          <div className="space-y-6">
-            {translations.map((item) => (
-              <div key={item.id} className="bg-[#1E1E1E] rounded-lg p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm text-[#BB86FC]">
+          <div className="space-y-4 sm:space-y-6">
+            {filteredTranslations.map((item) => (
+              <div key={item.id} className="bg-[#1E1E1E] rounded-lg p-4 sm:p-6">
+                <div className="flex justify-between items-center mb-3 sm:mb-4">
+                  <span className="text-xs sm:text-sm text-[#BB86FC]">
                     {item.sourceLanguage} → {item.targetLanguage}
                   </span>
-                  <span className="text-sm text-[#757575]">
-                    {new Date(item.timestamp).toLocaleString()}
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  <p className="text-[#F5F5F5]">{item.sourceText}</p>
-                  <p className="text-[#CCCCCC]">{item.translatedText}</p>
-                </div>
-
-                {item.audioUrl && (
                   <button
-                    onClick={() => playAudio(item.audioUrl!)}
-                    className="mt-4 text-[#BB86FC] hover:text-[#A070DA] transition-colors flex items-center gap-2"
+                    onClick={() => handleToggleFavorite(item.id)}
+                    className={`text-[#BB86FC] hover:text-[#A070DA] transition-colors`}
+                    aria-label={
+                      item.favorite
+                        ? "Remove from favorites"
+                        : "Add to favorites"
+                    }
                   >
-                    <Volume2 size={16} />
-                    Play Audio
+                    <Heart
+                      size={18}
+                      className={item.favorite ? "fill-[#BB86FC]" : ""}
+                    />
                   </button>
-                )}
+                </div>
+
+                <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
+                  <p className="text-sm sm:text-base text-[#F5F5F5]">
+                    {item.sourceText}
+                  </p>
+                  <p className="text-sm sm:text-base text-[#CCCCCC]">
+                    {item.translatedText}
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+                  {item.audioUrl && (
+                    <button
+                      onClick={() => playAudio(item.audioUrl!)}
+                      className="text-[#BB86FC] hover:text-[#A070DA] transition-colors flex items-center gap-2 text-sm sm:text-base"
+                    >
+                      <Volume2 size={14} className="sm:size-4" />
+                      Play Audio
+                    </button>
+                  )}
+                  <p className="text-xs sm:text-sm text-[#757575] sm:ml-auto">
+                    {new Date(item.timestamp).toLocaleString()}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

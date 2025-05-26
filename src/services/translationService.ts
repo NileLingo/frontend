@@ -1,17 +1,13 @@
 import {
-  translateText,
   translateAndSpeak,
   speechToSpeech,
-  generateSpeech,
-  transcribeAudio,
   getUserTranslations,
+  toggleTranslationFavorite,
 } from "./api";
 
 export {
-  translateText,
   translateAndSpeak,
   speechToSpeech,
-  generateSpeech,
-  transcribeAudio,
   getUserTranslations,
+  toggleTranslationFavorite,
 };

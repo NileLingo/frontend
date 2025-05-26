@@ -32,14 +32,12 @@ export const translateText = async (
   }
 };
 
-// Helper function to decode base64
 const decodeBase64 = (encodedString: string): string => {
   try {
-    // First decode the base64 to get the UTF-8 bytes, then decode those bytes to a string
     return decodeURIComponent(escape(atob(encodedString)));
   } catch (error) {
     console.error("Error decoding base64 string:", error);
-    return encodedString; // Return original if decoding fails
+    return encodedString;
   }
 };
 
@@ -156,7 +154,21 @@ export const transcribeAudio = async (audioBlob: Blob, language: Language) => {
 export const getUserTranslations = async (userId: string) => {
   try {
     const response = await axiosInstance.get(`/user/${userId}/translations`);
-    return response.data.translations;
+    return response.data.translations
+      .map((translation: any) => ({
+        id: translation._id,
+        sourceText: translation.src_text,
+        translatedText: translation.tgt_text,
+        timestamp: translation.date,
+        favorite: translation.favorite,
+        sourceLanguage: "ENG",
+        targetLanguage: "EGY",
+        mode: "text-to-text",
+      }))
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
   } catch (error) {
     console.error("Get translations error:", error);
     throw error;

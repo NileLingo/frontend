@@ -24,6 +24,7 @@ export interface TranslationItem {
   timestamp: string;
   mode: TranslationMode;
   audioUrl?: string;
+  favorite: boolean;
 }
 
 export interface TranslationState {
