@@ -325,39 +325,47 @@ const Translation: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center space-x-12 rtl:space-x-reverse mt-16">
-          <button
-            className="group flex flex-col items-center"
-            onClick={handleUpload}
+        <div className="w-full flex items-center justify-center mt-16">
+          <div
+            className="grid grid-cols-3 items-end gap-12 rtl:gap-reverse"
+            style={{ width: "384px" }}
           >
-            <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
-              <Upload className={`w-5 h-5 text-[#BB86FC] `} />
-            </div>
-            <span className="text-sm text-[#757575]">
-              {t("translation.uploadAudio")}
-            </span>
-          </button>
+            {/* Upload Button */}
+            <button
+              className="group flex flex-col items-center"
+              onClick={handleUpload} // Added back handleUpload
+            >
+              <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
+                <Upload className="w-5 h-5 text-[#BB86FC]" />
+              </div>
+              <span className="text-sm text-[#757575]">
+                {t("translation.uploadAudio")}
+              </span>
+            </button>
 
-          <button className="group flex flex-col items-center">
-            <div className="w-16 h-16 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
-              <Plus className="w-8 h-8 text-[#BB86FC]" />
-            </div>
-            <span className="text-sm text-[#757575]">
-              {t("translation.joinRoom")}
-            </span>
-          </button>
+            {/* Join Room Button - Centered */}
+            <button className="group flex flex-col items-center">
+              <div className="w-16 h-16 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
+                <Plus className="w-8 h-8 text-[#BB86FC]" />
+              </div>
+              <span className="text-sm text-[#757575]">
+                {t("translation.joinRoom")}
+              </span>
+            </button>
 
-          <button
-            className="group flex flex-col items-center"
-            onClick={() => navigate("/history")}
-          >
-            <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
-              <HistoryIcon className="w-5 h-5 text-[#BB86FC]" />
-            </div>
-            <span className="text-sm text-[#757575]">
-              {t("translation.history")}
-            </span>
-          </button>
+            {/* History Button */}
+            <button
+              className="group flex flex-col items-center"
+              onClick={() => navigate("/history")} // Kept the navigation
+            >
+              <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
+                <HistoryIcon className="w-5 h-5 text-[#BB86FC]" />
+              </div>
+              <span className="text-sm text-[#757575]">
+                {t("translation.history")}
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Hidden file input */}
@@ -373,4 +381,4 @@ const Translation: React.FC = () => {
   );
 };
 
-export default Translation
+export default Translation;
