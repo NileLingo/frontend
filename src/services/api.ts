@@ -15,7 +15,8 @@ export const translateText = async (
   text: string,
   srcLang: Language,
   tgtLang: Language,
-  userId: string
+  userId: string,
+  speakerName?: string
 ) => {
   try {
     const response = await axiosInstance.post("/translate-text", {
@@ -23,6 +24,7 @@ export const translateText = async (
       src_lang: srcLang === "ENG" ? "en" : "ar",
       tgt_lang: tgtLang === "ENG" ? "en" : "ar",
       user_id: userId,
+      ...(speakerName && { speaker_name: speakerName }),
     });
 
     return response.data.translated_text;
@@ -45,7 +47,8 @@ export const translateAndSpeak = async (
   text: string,
   srcLang: Language,
   tgtLang: Language,
-  userId: string
+  userId: string,
+  speakerName?: string
 ) => {
   try {
     const response = await axiosInstance.post(
@@ -55,11 +58,13 @@ export const translateAndSpeak = async (
         src_lang: srcLang === "ENG" ? "en" : "ar",
         tgt_lang: tgtLang === "ENG" ? "en" : "ar",
         user_id: userId,
+        ...(speakerName && { speaker_name: speakerName }),
       },
       {
         responseType: "blob",
       }
     );
+    console.log("speakerName", speakerName);
 
     const translatedText = response.headers["translated-text"];
     const translationId = response.headers["translation-id"];
@@ -79,7 +84,8 @@ export const speechToSpeech = async (
   audioBlob: Blob,
   srcLang: Language,
   tgtLang: Language,
-  userId: string
+  userId: string,
+  speakerName?: string
 ) => {
   try {
     const formData = new FormData();
@@ -87,6 +93,9 @@ export const speechToSpeech = async (
     formData.append("src_lang", srcLang === "ENG" ? "en" : "ar");
     formData.append("tgt_lang", tgtLang === "ENG" ? "en" : "ar");
     formData.append("user_id", userId);
+    if (speakerName) {
+      formData.append("speaker_name", speakerName);
+    }
 
     const response = await axiosInstance.post("/speech-to-speech", formData, {
       headers: {
@@ -111,13 +120,18 @@ export const speechToSpeech = async (
   }
 };
 
-export const generateSpeech = async (text: string, language: Language) => {
+export const generateSpeech = async (
+  text: string,
+  language: Language,
+  speakerName?: string
+) => {
   try {
     const response = await axiosInstance.post(
       "/generate-speech",
       {
         text,
         output_lang: language === "ENG" ? "en" : "ar",
+        ...(speakerName && { speaker_name: speakerName }),
       },
       {
         responseType: "blob",
@@ -186,6 +200,35 @@ export const toggleTranslationFavorite = async (
     return response.data;
   } catch (error) {
     console.error("Toggle favorite error:", error);
+    throw error;
+  }
+};
+
+export const getSpeakers = async (): Promise<string[]> => {
+  try {
+    const response = await axiosInstance.get("/get-speakers");
+    return response.data;
+  } catch (error) {
+    console.error("Get speakers error:", error);
+    throw error;
+  }
+};
+
+export const addSpeaker = async (file: File, speakerName: string) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("speaker_name", speakerName);
+
+    const response = await axiosInstance.post("/add-speaker", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Add speaker error:", error);
     throw error;
   }
 };

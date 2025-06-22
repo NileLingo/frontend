@@ -122,3 +122,7 @@ html[dir="rtl"] {
 [dir="rtl"] .text-right {
   text-align: left;
 }
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}

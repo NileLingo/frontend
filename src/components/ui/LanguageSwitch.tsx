@@ -1,6 +1,6 @@
-import React from 'react';
-import { ArrowLeftRight } from 'lucide-react';
-import { Language } from '../../types';
+import React from "react";
+import { ArrowLeftRight } from "lucide-react";
+import { Language } from "../../types";
 
 interface LanguageSwitchProps {
   sourceLanguage: Language;
@@ -8,18 +8,16 @@ interface LanguageSwitchProps {
   onSwitch: () => void;
 }
 
-const LanguageSwitch: React.FC<LanguageSwitchProps> = ({
-  onSwitch
-}) => {
+const LanguageSwitch: React.FC<LanguageSwitchProps> = ({ onSwitch }) => {
   return (
-    <button 
+    <button
       onClick={onSwitch}
-      className="fixed-center p-3 rounded-full text-[#BB86FC] hover:bg-[#2A2A2A] transition-colors shadow-lg"
+      className="fixed-center p-3 text-[#BB86FC] transition-colors shadow-lg"
       style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
       }}
     >
       <ArrowLeftRight size={24} />

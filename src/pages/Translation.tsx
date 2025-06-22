@@ -29,6 +29,7 @@ import LanguageSwitch from "../components/ui/LanguageSwitch";
 import AudioWaveform from "../components/ui/AudioWaveform";
 import LoadingScreen from "../components/ui/LoadingScreen";
 import ErrorToast from "../components/ui/ErrorToast";
+import SpeakerSelector from "../components/ui/SpeakerSelector";
 
 const Translation: React.FC = () => {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const Translation: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSpeaker, setSelectedSpeaker] = useState<string | null>(null);
 
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
@@ -100,7 +102,8 @@ const Translation: React.FC = () => {
               audioBlob,
               currentTranslation.sourceLanguage,
               currentTranslation.targetLanguage,
-              user.id
+              user.id,
+              selectedSpeaker || undefined
             );
             dispatch(setSourceText(result.originalText));
             dispatch(setTranslatedText(result.translatedText));
@@ -153,7 +156,8 @@ const Translation: React.FC = () => {
         currentTranslation.sourceText,
         currentTranslation.sourceLanguage,
         currentTranslation.targetLanguage,
-        user.id
+        user.id,
+        selectedSpeaker || undefined
       );
 
       dispatch(translationSuccess(result.translatedText));
@@ -199,7 +203,8 @@ const Translation: React.FC = () => {
         file,
         currentTranslation.sourceLanguage,
         currentTranslation.targetLanguage,
-        user.id
+        user.id,
+        selectedSpeaker || undefined
       );
 
       dispatch(setSourceText(result.originalText));
@@ -301,6 +306,16 @@ const Translation: React.FC = () => {
             >
               {t(`common.languages.${currentTranslation.targetLanguage}`)}
             </div>
+            
+            {/* Voice Selector - Top Right */}
+            <div className={`absolute top-4 ${isRTL ? "left-4" : "right-4"} z-10`}>
+              <SpeakerSelector
+              selectedSpeaker={selectedSpeaker}
+              onSpeakerChange={setSelectedSpeaker}
+              />
+            </div>
+            
+
             <textarea
               className="w-full h-64 bg-[#1E1E1E] rounded-2xl py-12 px-4 resize-none text-[#F5F5F5] placeholder-[#757575] focus:outline-none rtl:text-right"
               placeholder={t("translation.translationWillAppear")}
@@ -333,7 +348,7 @@ const Translation: React.FC = () => {
             {/* Upload Button */}
             <button
               className="group flex flex-col items-center"
-              onClick={handleUpload} // Added back handleUpload
+              onClick={handleUpload}
             >
               <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
                 <Upload className="w-5 h-5 text-[#BB86FC]" />
@@ -356,7 +371,7 @@ const Translation: React.FC = () => {
             {/* History Button */}
             <button
               className="group flex flex-col items-center"
-              onClick={() => navigate("/history")} // Kept the navigation
+              onClick={() => navigate("/history")}
             >
               <div className="w-12 h-12 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
                 <HistoryIcon className="w-5 h-5 text-[#BB86FC]" />

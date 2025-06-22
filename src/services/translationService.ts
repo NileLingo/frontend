@@ -3,6 +3,8 @@ import {
   speechToSpeech,
   getUserTranslations,
   toggleTranslationFavorite,
+  getSpeakers,
+  addSpeaker,
 } from "./api";
 
 export {
@@ -10,4 +12,6 @@ export {
   speechToSpeech,
   getUserTranslations,
   toggleTranslationFavorite,
+  getSpeakers,
+  addSpeaker,
 };

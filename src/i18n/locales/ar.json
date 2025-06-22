@@ -61,7 +61,14 @@
     "startRecording": "ابدأ التسجيل",
     "stopRecording": "وقف التسجيل",
     "playAudio": "تشغيل الصوت",
-    "pauseAudio": "وقف الصوت مؤقتاً"
+    "pauseAudio": "وقف الصوت مؤقتاً",
+    "selectVoice": "اختار النبرة",
+    "defaultVoice": "النبرة الافتراضية",
+    "addNewVoice": "ضيف نبرة جديدة",
+    "voiceName": "اسم النبرة",
+    "enterVoiceName": "اكتب اسم النبرة",
+    "audioFile": "ملف الصوت",
+    "selectAudioFile": "اضغط لاختيار ملف صوتي"
   },
   "history": {
     "title": "سجل الترجمة",

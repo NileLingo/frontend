@@ -61,7 +61,14 @@
     "startRecording": "Start recording",
     "stopRecording": "Stop recording",
     "playAudio": "Play audio",
-    "pauseAudio": "Pause audio"
+    "pauseAudio": "Pause audio",
+    "selectVoice": "Select Tone",
+    "defaultVoice": "Default Tone",
+    "addNewVoice": "Add New Tone",
+    "voiceName": "Tone Name",
+    "enterVoiceName": "Enter Tone name",
+    "audioFile": "Audio File",
+    "selectAudioFile": "Click to select audio file"
   },
   "history": {
     "title": "Translation History",
