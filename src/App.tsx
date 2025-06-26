@@ -17,6 +17,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Translation from "./pages/Translation";
 import History from "./pages/History";
+import LiveStream from "./pages/LiveStream";
 import Navbar from "./components/ui/Navbar";
 
 // Protected Route Component
@@ -40,7 +41,7 @@ function AppContent() {
   }, [i18n.language]);
 
   // Define routes where navbar should NOT appear
-  const noNavbarRoutes = ["/login", "/register"];
+  const noNavbarRoutes = ["/login", "/register", "/live-stream"];
   const shouldShowNavbar = !noNavbarRoutes.includes(location.pathname);
 
   return (
@@ -80,7 +81,15 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/\" replace />} />
+        <Route
+          path="/live-stream"
+          element={
+            // <ProtectedRoute>
+              <LiveStream />
+            // </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

@@ -218,6 +218,10 @@ const Translation: React.FC = () => {
     }
   };
 
+  const handleJoinRoom = () => {
+    navigate('/live-stream');
+  };
+
   return (
     <div className="min-h-screen bg-[#121212] text-[#F5F5F5] flex flex-col">
       {isLoading && <LoadingScreen message={t("translation.translating")} />}
@@ -359,7 +363,10 @@ const Translation: React.FC = () => {
             </button>
 
             {/* Join Room Button - Centered */}
-            <button className="group flex flex-col items-center">
+            <button 
+              className="group flex flex-col items-center"
+              onClick={handleJoinRoom}
+            >
               <div className="w-16 h-16 bg-[#1E1E1E] rounded-full flex items-center justify-center mb-2 group-hover:bg-[#2A2A2A] transition-colors">
                 <Plus className="w-8 h-8 text-[#BB86FC]" />
               </div>
