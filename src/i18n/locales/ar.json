@@ -70,6 +70,35 @@
     "audioFile": "ملف الصوت",
     "selectAudioFile": "اضغط لاختيار ملف صوتي"
   },
+  "liveStream": {
+    "title": "وضع المحادثة",
+    "connected": "متوصّل",
+    "disconnected": "مش متوصّل",
+    "liveSession": "جلسة مباشرة",
+    "chunkSize": "حجم الجزء (بالملي ثانية)",
+    "websocketUrl": "لينك الويب سوكيت",
+    "liveTranscript": "المحادثة المباشر",
+    "startRecording": "ابدأ تسجيل علشان تشوف المحادثة المباشر",
+    "silence": "سكات",
+    "processing": "جاري التحميل...",
+    "speaker": "المتكلّم",
+    "speakers": "المتكلّمين",
+    "endCall": "اقفل المحادثة",
+    "leaveRoom": "اخرج من الأوضة",
+    "recordingTime": "مدة التسجيل",
+    "status": {
+      "clickToStart": "اضغط علشان تبدأ المحادثة",
+      "recording": "شغّال تسجيل...",
+      "stopped": "وقفنا التسجيل. بنجهّز الصوت...",
+      "finished": "الصوت جاهز! تقدر تسجّل تاني.",
+      "noAudio": "مفيش صوت باين...",
+      "connecting": "بنوصّل بالسيرفر...",
+      "connected": "اتوصّلنا بالسيرفر.",
+      "disconnected": "الاتصال بالويب سوكيت اتقطع.",
+      "error": "فيه مشكلة في الاتصال بالويب سوكيت.",
+      "processing": "يا المعالجة خلصت يا الاتصال اتقطع."
+    }
+  },
   "history": {
     "title": "سجل الترجمة",
     "showAll": "عرض الكل",

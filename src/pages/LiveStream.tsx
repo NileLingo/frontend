@@ -11,6 +11,8 @@ import {
   Wifi,
   WifiOff,
   Volume2,
+  PhoneOff,
+  User,
 } from "lucide-react";
 import Button from "../components/ui/Button";
 import AudioWaveform from "../components/ui/AudioWaveform";
@@ -32,22 +34,32 @@ interface WebSocketData {
   type?: string;
 }
 
+interface SpeakerInfo {
+  id: number;
+  name: string;
+  isActive: boolean;
+  lastSpoke: number;
+  color: string;
+}
+
 const LiveStream: React.FC = () => {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
 
   // State management
   const [isRecording, setIsRecording] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [status, setStatus] = useState("Click to start transcription");
-  const [chunkDuration, setChunkDuration] = useState(1000);
+  const [status, setStatus] = useState(t("liveStream.status.clickToStart"));
+  const [chunkDuration, setChunkDuration] = useState(500);
   const [websocketUrl, setWebsocketUrl] = useState("");
   const [transcriptLines, setTranscriptLines] = useState<TranscriptLine[]>([]);
   const [bufferText, setBufferText] = useState("");
   const [recordingTime, setRecordingTime] = useState("00:00");
   const [showSettings, setShowSettings] = useState(false);
   const [waitingForStop, setWaitingForStop] = useState(false);
+  const [speakers, setSpeakers] = useState<SpeakerInfo[]>([]);
+  const [activeSpeakerId, setActiveSpeakerId] = useState<number | null>(null);
 
   // Refs
   const websocketRef = useRef<WebSocket | null>(null);
@@ -59,12 +71,48 @@ const LiveStream: React.FC = () => {
   const timerIntervalRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const lastReceivedDataRef = useRef<WebSocketData | null>(null);
+  const speakerRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const transcriptEndRef = useRef<HTMLDivElement>(null);
+
+  // Speaker colors
+  const speakerColors = [
+    "bg-[#BB86FC]", // Primary purple
+    "bg-[#03DAC6]", // Teal
+    "bg-[#CF6679]", // Pink/Red
+    "bg-[#FFC107]", // Amber
+    "bg-[#4CAF50]", // Green
+    "bg-[#FF9800]", // Orange
+    "bg-[#9C27B0]", // Purple
+    "bg-[#2196F3]", // Blue
+  ];
 
   // Initialize WebSocket URL
   useEffect(() => {
     const defaultUrl = `wss://content-seriously-tiger.ngrok-free.app:443/asr`;
     setWebsocketUrl(defaultUrl);
   }, []);
+
+  // Update status translations when language changes
+  useEffect(() => {
+    if (!isRecording && !isConnected) {
+      setStatus(t("liveStream.status.clickToStart"));
+    }
+  }, [i18n.language, isRecording, isConnected, t]);
+
+  // Auto-scroll to bottom of transcript
+  useEffect(() => {
+    transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [transcriptLines, bufferText]);
+
+  // Focus on active speaker card
+  useEffect(() => {
+    if (activeSpeakerId && speakerRefs.current[activeSpeakerId]) {
+      speakerRefs.current[activeSpeakerId]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [activeSpeakerId]);
 
   // Timer update function
   const updateTimer = useCallback(() => {
@@ -78,19 +126,72 @@ const LiveStream: React.FC = () => {
     setRecordingTime(`${minutes}:${seconds}`);
   }, []);
 
+  // Update speakers based on transcript lines
+  const updateSpeakers = useCallback(
+    (lines: TranscriptLine[]) => {
+      const currentTime = Date.now();
+      const activeSpeakers = new Set<number>();
+      let currentActiveSpeaker: number | null = null;
+
+      // Get active speakers from recent lines and find the most recent speaker
+      lines.forEach((line, index) => {
+        if (line.speaker > 0) {
+          activeSpeakers.add(line.speaker);
+          // The last speaker in the array is the most recent
+          if (index === lines.length - 1) {
+            currentActiveSpeaker = line.speaker;
+          }
+        }
+      });
+
+      // Set the active speaker for focusing
+      setActiveSpeakerId(currentActiveSpeaker);
+
+      setSpeakers((prevSpeakers) => {
+        const updatedSpeakers = [...prevSpeakers];
+
+        // Add new speakers
+        activeSpeakers.forEach((speakerId) => {
+          if (!updatedSpeakers.find((s) => s.id === speakerId)) {
+            updatedSpeakers.push({
+              id: speakerId,
+              name: `${t("liveStream.speaker")} ${speakerId}`,
+              isActive: speakerId === currentActiveSpeaker,
+              lastSpoke: currentTime,
+              color: speakerColors[(speakerId - 1) % speakerColors.length],
+            });
+          }
+        });
+
+        // Update existing speakers
+        return updatedSpeakers.map((speaker) => {
+          const isCurrentlyActive = speaker.id === currentActiveSpeaker;
+          return {
+            ...speaker,
+            isActive: isCurrentlyActive,
+            lastSpoke: activeSpeakers.has(speaker.id)
+              ? currentTime
+              : speaker.lastSpoke,
+          };
+        });
+      });
+    },
+    [t]
+  );
+
   // WebSocket setup
   const setupWebSocket = useCallback((): Promise<void> => {
     return new Promise((resolve, reject) => {
       try {
         websocketRef.current = new WebSocket(websocketUrl);
       } catch (error) {
-        setStatus("Invalid WebSocket URL. Please check and try again.");
+        setStatus(t("liveStream.status.error"));
         reject(error);
         return;
       }
 
       websocketRef.current.onopen = () => {
-        setStatus("Connected to server.");
+        setStatus(t("liveStream.status.connected"));
         setIsConnected(true);
         resolve();
       };
@@ -98,12 +199,12 @@ const LiveStream: React.FC = () => {
       websocketRef.current.onclose = () => {
         setIsConnected(false);
         if (waitingForStop) {
-          setStatus("Processing finalized or connection closed.");
+          setStatus(t("liveStream.status.processing"));
           if (lastReceivedDataRef.current) {
             renderTranscript(lastReceivedDataRef.current, true);
           }
         } else {
-          setStatus("Disconnected from the WebSocket server.");
+          setStatus(t("liveStream.status.disconnected"));
           if (isRecording) {
             stopRecording();
           }
@@ -114,7 +215,7 @@ const LiveStream: React.FC = () => {
       };
 
       websocketRef.current.onerror = () => {
-        setStatus("Error connecting to WebSocket.");
+        setStatus(t("liveStream.status.error"));
         setIsConnected(false);
         reject(new Error("Error connecting to WebSocket"));
       };
@@ -127,7 +228,7 @@ const LiveStream: React.FC = () => {
           if (lastReceivedDataRef.current) {
             renderTranscript(lastReceivedDataRef.current, true);
           }
-          setStatus("Finished processing audio! Ready to record again.");
+          setStatus(t("liveStream.status.finished"));
 
           if (websocketRef.current) {
             websocketRef.current.close();
@@ -139,7 +240,7 @@ const LiveStream: React.FC = () => {
         renderTranscript(data, false);
       };
     });
-  }, [websocketUrl, waitingForStop, isRecording]);
+  }, [websocketUrl, waitingForStop, isRecording, t]);
 
   // Render transcript function
   const renderTranscript = useCallback(
@@ -153,11 +254,13 @@ const LiveStream: React.FC = () => {
 
       if (currentStatus === "no_audio_detected") {
         setTranscriptLines([]);
-        setBufferText("No audio detected...");
+        setBufferText(t("liveStream.status.noAudio"));
+        setActiveSpeakerId(null);
         return;
       }
 
       setTranscriptLines(lines);
+      updateSpeakers(lines);
 
       // Handle buffer text
       let combinedBuffer = "";
@@ -173,7 +276,7 @@ const LiveStream: React.FC = () => {
       }
       setBufferText(combinedBuffer);
     },
-    []
+    [t, updateSpeakers]
   );
 
   // Start recording function
@@ -206,12 +309,12 @@ const LiveStream: React.FC = () => {
       timerIntervalRef.current = window.setInterval(updateTimer, 1000);
 
       setIsRecording(true);
-      setStatus("Recording...");
+      setStatus(t("liveStream.status.recording"));
     } catch (err) {
-      setStatus("Error accessing microphone. Please allow microphone access.");
+      setStatus(t("errors.microphoneAccess"));
       console.error(err);
     }
-  }, [chunkDuration, updateTimer]);
+  }, [chunkDuration, updateTimer, t]);
 
   // Stop recording function
   const stopRecording = useCallback(() => {
@@ -223,7 +326,7 @@ const LiveStream: React.FC = () => {
     ) {
       const emptyBlob = new Blob([], { type: "audio/webm" });
       websocketRef.current.send(emptyBlob);
-      setStatus("Recording stopped. Processing final audio...");
+      setStatus(t("liveStream.status.stopped"));
     }
 
     if (recorderRef.current) {
@@ -262,7 +365,8 @@ const LiveStream: React.FC = () => {
     setRecordingTime("00:00");
     startTimeRef.current = null;
     setIsRecording(false);
-  }, []);
+    setActiveSpeakerId(null);
+  }, [t]);
 
   // Toggle recording function
   const toggleRecording = useCallback(async () => {
@@ -280,7 +384,7 @@ const LiveStream: React.FC = () => {
           await startRecording();
         }
       } catch (err) {
-        setStatus("Could not connect to WebSocket or access mic. Aborted.");
+        setStatus(t("liveStream.status.error"));
         console.error(err);
       }
     } else {
@@ -292,7 +396,23 @@ const LiveStream: React.FC = () => {
     startRecording,
     setupWebSocket,
     stopRecording,
+    t,
   ]);
+
+  // End call function
+  const handleEndCall = useCallback(() => {
+    if (isRecording) {
+      stopRecording();
+    }
+    if (websocketRef.current) {
+      websocketRef.current.close();
+    }
+    setSpeakers([]);
+    setTranscriptLines([]);
+    setBufferText("");
+    setActiveSpeakerId(null);
+    navigate("/translate");
+  }, [isRecording, stopRecording, navigate]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -310,19 +430,13 @@ const LiveStream: React.FC = () => {
   }, []);
 
   const getSpeakerColor = (speaker: number) => {
-    const colors = [
-      "bg-[#BB86FC]", // Primary purple
-      "bg-[#03DAC6]", // Teal
-      "bg-[#CF6679]", // Pink/Red
-      "bg-[#FFC107]", // Amber
-      "bg-[#4CAF50]", // Green
-      "bg-[#FF9800]", // Orange
-    ];
-    return colors[speaker % colors.length] || "bg-[#757575]";
+    return (
+      speakerColors[(speaker - 1) % speakerColors.length] || "bg-[#757575]"
+    );
   };
 
   return (
-    <div className="min-h-screen bg-[#121212] text-[#F5F5F5]">
+    <div className="min-h-screen bg-[#121212] text-[#F5F5F5] flex flex-col">
       {/* Header */}
       <div className="bg-[#1E1E1E] px-4 sm:px-6 lg:px-8 py-4 border-b border-[#333]">
         <div className="flex items-center justify-between">
@@ -335,17 +449,17 @@ const LiveStream: React.FC = () => {
               <ArrowLeft size={20} className={isRTL ? "rotate-180" : ""} />
             </Button>
             <div>
-              <h1 className="text-xl font-bold">Live Transcription</h1>
+              <h1 className="text-xl font-bold">{t("liveStream.title")}</h1>
               <div className="flex items-center gap-2 text-sm text-[#757575]">
                 {isConnected ? (
                   <>
                     <Wifi size={14} className="text-[#03DAC6]" />
-                    <span>Connected</span>
+                    <span>{t("liveStream.connected")}</span>
                   </>
                 ) : (
                   <>
                     <WifiOff size={14} className="text-[#CF6679]" />
-                    <span>Disconnected</span>
+                    <span>{t("liveStream.disconnected")}</span>
                   </>
                 )}
               </div>
@@ -353,10 +467,6 @@ const LiveStream: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Users size={16} className="text-[#757575]" />
-              <span className="text-[#757575]">Live Session</span>
-            </div>
             <Button
               variant="text"
               onClick={() => setShowSettings(!showSettings)}
@@ -381,7 +491,7 @@ const LiveStream: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[#CCCCCC] mb-2">
-                    Chunk Size (ms)
+                    {t("liveStream.chunkSize")}
                   </label>
                   <select
                     value={chunkDuration}
@@ -398,7 +508,7 @@ const LiveStream: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#CCCCCC] mb-2">
-                    WebSocket URL
+                    {t("liveStream.websocketUrl")}
                   </label>
                   <input
                     type="text"
@@ -415,21 +525,119 @@ const LiveStream: React.FC = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Recording Controls */}
-        <div className="bg-[#1E1E1E] px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col items-center gap-4">
-            {/* Record Button */}
+      <div className="flex-1 flex flex-col lg:flex-row">
+        {/* Left Side - Speakers */}
+        <div className="lg:w-1/3 bg-[#1E1E1E] p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-[#333]">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Users size={20} className="text-[#BB86FC]" />
+              {t("liveStream.speakers")} ({speakers.length})
+            </h2>
+
+            {/* Recording Status */}
+            <div className="flex items-center gap-2">
+              {isRecording && (
+                <>
+                  <div className="w-2 h-2 bg-[#CF6679] rounded-full animate-pulse"></div>
+                  <span className="text-xs text-[#CF6679] font-medium">
+                    {recordingTime}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Speaker Cards */}
+          <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-hidden">
+            {speakers.length === 0 ? (
+              <div className="text-center text-[#757575] py-8">
+                <User size={48} className="mx-auto mb-4 opacity-50" />
+                <p className="text-sm">{t("liveStream.startRecording")}</p>
+              </div>
+            ) : (
+              speakers.map((speaker) => (
+                <motion.div
+                  key={speaker.id}
+                  ref={(el) => (speakerRefs.current[speaker.id] = el)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: speaker.isActive ? 1.02 : 1,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    scale: { duration: 0.2 },
+                  }}
+                  className={`
+                    relative bg-[#2A2A2A] rounded-xl p-4 border-2 transition-all duration-300
+                    ${
+                      speaker.isActive
+                        ? "border-[#BB86FC] shadow-lg shadow-[#BB86FC]/30 bg-[#2A2A2A]/80"
+                        : "border-[#333]"
+                    }
+                  `}
+                >
+                  {/* Speaker Avatar and Info */}
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`
+                      w-12 h-12 rounded-full flex items-center justify-center text-white font-bold
+                      ${speaker.color}
+                      ${
+                        speaker.isActive
+                          ? "animate-pulse ring-2 ring-[#BB86FC] ring-opacity-50"
+                          : ""
+                      }
+                    `}
+                    >
+                      {speaker.id}
+                    </div>
+
+                    <div className="flex-1">
+                      <h3 className="font-medium text-[#F5F5F5]">
+                        {speaker.name}
+                      </h3>
+                    </div>
+
+                    {/* Audio Waveform for Active Speaker */}
+                    {speaker.isActive && (
+                      <AudioWaveform
+                        isActive={true}
+                        size="sm"
+                        className="w-16"
+                      />
+                    )}
+                  </div>
+
+                  {/* Active Indicator */}
+                  {speaker.isActive && (
+                    <div className="absolute top-2 right-2">
+                      <div className="w-3 h-3 bg-[#03DAC6] rounded-full animate-pulse shadow-lg shadow-[#03DAC6]/50"></div>
+                    </div>
+                  )}
+
+                  {/* Glow effect for active speaker */}
+                  {speaker.isActive && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#BB86FC]/10 to-[#03DAC6]/10 pointer-events-none"></div>
+                  )}
+                </motion.div>
+              ))
+            )}
+          </div>
+
+          {/* Recording Controls */}
+          <div className="mt-8 space-y-4">
             <motion.button
               onClick={toggleRecording}
               disabled={waitingForStop}
               className={`
-                relative flex items-center justify-center gap-4 px-6 py-3 rounded-full
+                w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl
                 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#BB86FC]
                 ${
                   isRecording
-                    ? "bg-[#CF6679] hover:bg-[#B85A6B] min-w-[200px]"
-                    : "bg-[#BB86FC] hover:bg-[#A070DA] w-16 h-16"
+                    ? "bg-[#CF6679] hover:bg-[#B85A6B] text-white"
+                    : "bg-[#BB86FC] hover:bg-[#A070DA] text-white"
                 }
                 ${
                   waitingForStop
@@ -439,59 +647,87 @@ const LiveStream: React.FC = () => {
               `}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="flex items-center justify-center">
-                {isRecording ? (
-                  <div className="w-6 h-6 bg-white rounded-sm" />
-                ) : (
-                  <Mic size={24} className="text-white" />
-                )}
-              </div>
-
-              {isRecording && (
-                <div className="flex items-center gap-3">
-                  <AudioWaveform isActive={true} size="sm" className="w-16" />
-                  <div className="flex items-center gap-2 text-white">
-                    <Clock size={16} />
-                    <span className="font-mono text-sm">{recordingTime}</span>
-                  </div>
-                </div>
+              {isRecording ? (
+                <>
+                  <div className="w-4 h-4 bg-white rounded-sm" />
+                  <span className="font-medium">
+                    {t("translation.stopRecording")}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Mic size={20} />
+                  <span className="font-medium">
+                    {t("translation.startRecording")}
+                  </span>
+                </>
               )}
             </motion.button>
 
-            {/* Status */}
-            <p className="text-center text-[#CCCCCC] text-sm">{status}</p>
+            <Button
+              onClick={handleEndCall}
+              variant="secondary"
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-[#CF6679] hover:bg-[#B85A6B] text-white border-none"
+            >
+              <PhoneOff size={20} />
+              <span className="font-medium">{t("liveStream.endCall")}</span>
+            </Button>
+          </div>
+
+          {/* Status */}
+          <div className="mt-4 text-center">
+            <p className="text-sm text-[#CCCCCC]">{status}</p>
           </div>
         </div>
 
-        {/* Transcript Area */}
-        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-[#1E1E1E] rounded-2xl p-6 min-h-[400px]">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+        {/* Right Side - Transcript */}
+        <div className="flex-1 p-4 sm:p-6">
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
                 <Volume2 size={20} className="text-[#BB86FC]" />
-                Live Transcript
+                {t("liveStream.liveTranscript")}
               </h2>
 
-              <div className="space-y-4 max-h-[500px] overflow-y-auto scrollbar-hidden">
+              {isRecording && (
+                <div className="flex items-center gap-2 text-sm text-[#757575]">
+                  <Clock size={16} />
+                  <span>
+                    {t("liveStream.recordingTime")}: {recordingTime}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Transcript Content */}
+            <div className="flex-1 bg-[#1E1E1E] rounded-2xl p-6 overflow-hidden">
+              <div className="h-full overflow-y-auto scrollbar-hidden space-y-4">
                 {transcriptLines.length === 0 && !bufferText ? (
-                  <div className="text-center text-[#757575] py-12">
-                    <Mic size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>Start recording to see live transcription</p>
+                  <div className="h-full flex items-center justify-center text-center text-[#757575]">
+                    <div>
+                      <Mic size={48} className="mx-auto mb-4 opacity-50" />
+                      <p>{t("liveStream.startRecording")}</p>
+                    </div>
                   </div>
                 ) : (
                   <>
+                    {/* Display each line separately for line-by-line effect */}
                     {transcriptLines.map((line, index) => (
                       <motion.div
-                        key={index}
+                        key={`${line.speaker}-${index}-${line.beg}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: index * 0.1, // Stagger animation for each line
+                        }}
                         className="space-y-2"
                       >
                         {/* Speaker Label */}
                         <div className="flex items-center gap-2">
                           {line.speaker === -2 ? (
                             <span className="px-3 py-1 bg-[#2A2A2A] text-[#757575] rounded-full text-xs">
-                              Silence
+                              {t("liveStream.silence")}
                             </span>
                           ) : line.speaker === -1 ? (
                             <span
@@ -499,19 +735,19 @@ const LiveStream: React.FC = () => {
                                 1
                               )} text-white rounded-full text-xs font-medium`}
                             >
-                              Speaker 1
+                              {t("liveStream.speaker")} 1
                             </span>
                           ) : line.speaker > 0 ? (
                             <span
                               className={`px-3 py-1 ${getSpeakerColor(
                                 line.speaker
-                              )} text-white rounded-full text-xs font-medium`}
+                              )} text-white rounded-full text-xs font-medium shadow-lg`}
                             >
-                              Speaker {line.speaker}
+                              {t("liveStream.speaker")} {line.speaker}
                             </span>
                           ) : (
                             <span className="px-3 py-1 bg-[#757575] text-white rounded-full text-xs">
-                              Processing...
+                              {t("liveStream.processing")}
                             </span>
                           )}
 
@@ -522,27 +758,43 @@ const LiveStream: React.FC = () => {
                           )}
                         </div>
 
-                        {/* Transcript Text */}
+                        {/* Transcript Text - Each line displayed separately */}
                         {line.text && (
-                          <div className="pl-4 border-l-2 border-[#333]">
-                            <p className="text-[#F5F5F5] leading-relaxed">
+                          <motion.div
+                            className="pl-4 border-l-2 border-[#333]"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <p className="text-[#F5F5F5] leading-relaxed rtl:text-right">
                               {line.text}
                             </p>
-                          </div>
+                          </motion.div>
                         )}
                       </motion.div>
                     ))}
 
-                    {/* Buffer Text */}
+                    {/* Buffer Text - Live typing effect */}
                     {bufferText && (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className="pl-4 border-l-2 border-[#BB86FC] border-dashed"
                       >
-                        <p className="text-[#CCCCCC] italic">{bufferText}</p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="px-2 py-1 bg-[#BB86FC] text-white rounded-full text-xs">
+                            Live
+                          </span>
+                          <div className="w-2 h-2 bg-[#BB86FC] rounded-full animate-pulse"></div>
+                        </div>
+                        <p className="text-[#CCCCCC] italic rtl:text-right">
+                          {bufferText}
+                        </p>
                       </motion.div>
                     )}
+
+                    {/* Auto-scroll anchor */}
+                    <div ref={transcriptEndRef} />
                   </>
                 )}
               </div>

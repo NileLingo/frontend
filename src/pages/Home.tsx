@@ -50,15 +50,26 @@ const Home: React.FC = () => {
                 <button
                   onClick={() => setIsActive((prev) => !prev)}
                   className="focus:outline-none"
-                  aria-label={isActive ? t("translation.pauseAudio") : t("translation.playAudio")}
+                  aria-label={
+                    isActive
+                      ? t("translation.pauseAudio")
+                      : t("translation.playAudio")
+                  }
                 >
                   {isActive ? (
-                    <Pause size={32} className="text-[#BB86FC] animate-pulse" />
+                    <Pause
+                      size={32}
+                      className="text-[#BB86FC] animate-pulse rtl:rotate-180"
+                    />
                   ) : (
-                    <Play size={32} className="text-[#BB86FC]" />
+                    <Play size={32} className="text-[#BB86FC] rtl:rotate-180" />
                   )}
                 </button>
-                <AudioWaveform isActive={isActive} size="lg" className="w-40 sm:w-48" />
+                <AudioWaveform
+                  isActive={isActive}
+                  size="lg"
+                  className="w-40 sm:w-48"
+                />
               </div>
               <div className="flex justify-center space-x-2">
                 <span className="px-4 py-1 bg-[#757575] rounded-full text-sm">

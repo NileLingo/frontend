@@ -70,6 +70,35 @@
     "audioFile": "Audio File",
     "selectAudioFile": "Click to select audio file"
   },
+  "liveStream": {
+    "title": "Conversation Mode",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "liveSession": "Live Session",
+    "chunkSize": "Chunk Size (ms)",
+    "websocketUrl": "WebSocket URL",
+    "liveTranscript": "Live Conversation",
+    "startRecording": "Start recording to see live Conversation",
+    "silence": "Silence",
+    "processing": "Processing...",
+    "speaker": "Speaker",
+    "speakers": "Speakers",
+    "endCall": "End Conversation",
+    "leaveRoom": "Leave Room",
+    "recordingTime": "Recording Time",
+    "status": {
+      "clickToStart": "Click to start Conversation",
+      "recording": "Recording...",
+      "stopped": "Recording stopped. Processing final audio...",
+      "finished": "Finished processing audio! Ready to record again.",
+      "noAudio": "No audio detected...",
+      "connecting": "Connecting to server...",
+      "connected": "Connected to server.",
+      "disconnected": "Disconnected from the WebSocket server.",
+      "error": "Error connecting to WebSocket.",
+      "processing": "Processing finalized or connection closed."
+    }
+  },
   "history": {
     "title": "Translation History",
     "showAll": "Show All",
