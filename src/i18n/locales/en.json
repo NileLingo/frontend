@@ -78,6 +78,7 @@
     "chunkSize": "Chunk Size (ms)",
     "websocketUrl": "WebSocket URL",
     "liveTranscript": "Live Conversation",
+    "liveTranslation": "Live Translation",
     "startRecording": "Start recording to see live Conversation",
     "silence": "Silence",
     "processing": "Processing...",
@@ -86,6 +87,10 @@
     "endCall": "End Conversation",
     "leaveRoom": "Leave Room",
     "recordingTime": "Recording Time",
+    "mode": "Mode",
+    "transcriptionMode": "Transcription Only",
+    "translationMode": "Translation",
+    "targetLanguage": "Target Language",
     "status": {
       "clickToStart": "Click to start Conversation",
       "recording": "Recording...",

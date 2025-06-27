@@ -42,6 +42,8 @@ interface SpeakerInfo {
   color: string;
 }
 
+type TargetLanguage = "ar" | "en";
+
 const LiveStream: React.FC = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -60,6 +62,8 @@ const LiveStream: React.FC = () => {
   const [waitingForStop, setWaitingForStop] = useState(false);
   const [speakers, setSpeakers] = useState<SpeakerInfo[]>([]);
   const [activeSpeakerId, setActiveSpeakerId] = useState<number | null>(null);
+
+  const [targetLanguage, setTargetLanguage] = useState<TargetLanguage>("ar");
 
   // Refs
   const websocketRef = useRef<WebSocket | null>(null);
@@ -193,6 +197,16 @@ const LiveStream: React.FC = () => {
       websocketRef.current.onopen = () => {
         setStatus(t("liveStream.status.connected"));
         setIsConnected(true);
+
+        // Send mode and target language configuration
+        if (websocketRef.current) {
+          const config = {
+            type: "config",
+            target_language: targetLanguage,
+          };
+          websocketRef.current.send(JSON.stringify(config));
+        }
+
         resolve();
       };
 
@@ -240,7 +254,7 @@ const LiveStream: React.FC = () => {
         renderTranscript(data, false);
       };
     });
-  }, [websocketUrl, waitingForStop, isRecording, t]);
+  }, [websocketUrl, waitingForStop, isRecording, targetLanguage, t]);
 
   // Render transcript function
   const renderTranscript = useCallback(
@@ -488,7 +502,24 @@ const LiveStream: React.FC = () => {
             className="bg-[#1E1E1E] border-b border-[#333] overflow-hidden"
           >
             <div className="px-4 sm:px-6 lg:px-8 py-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#CCCCCC] mb-2">
+                    {t("liveStream.targetLanguage")}
+                  </label>
+                  <select
+                    value={targetLanguage}
+                    onChange={(e) =>
+                      setTargetLanguage(e.target.value as TargetLanguage)
+                    }
+                    disabled={isRecording || isConnected}
+                    className="w-full bg-[#2A2A2A] text-[#F5F5F5] rounded-lg px-3 py-2 border border-[#333] focus:outline-none focus:ring-2 focus:ring-[#BB86FC] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="en">{t("common.languages.ENG")}</option>
+                    <option value="ar">{t("common.languages.EGY")}</option>
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-[#CCCCCC] mb-2">
                     {t("liveStream.chunkSize")}
@@ -496,7 +527,8 @@ const LiveStream: React.FC = () => {
                   <select
                     value={chunkDuration}
                     onChange={(e) => setChunkDuration(parseInt(e.target.value))}
-                    className="w-full bg-[#2A2A2A] text-[#F5F5F5] rounded-lg px-3 py-2 border border-[#333] focus:outline-none focus:ring-2 focus:ring-[#BB86FC]"
+                    disabled={isRecording || isConnected}
+                    className="w-full bg-[#2A2A2A] text-[#F5F5F5] rounded-lg px-3 py-2 border border-[#333] focus:outline-none focus:ring-2 focus:ring-[#BB86FC] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value={500}>500 ms</option>
                     <option value={1000}>1000 ms</option>
@@ -505,18 +537,6 @@ const LiveStream: React.FC = () => {
                     <option value={4000}>4000 ms</option>
                     <option value={5000}>5000 ms</option>
                   </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#CCCCCC] mb-2">
-                    {t("liveStream.websocketUrl")}
-                  </label>
-                  <input
-                    type="text"
-                    value={websocketUrl}
-                    onChange={(e) => setWebsocketUrl(e.target.value)}
-                    className="w-full bg-[#2A2A2A] text-[#F5F5F5] rounded-lg px-3 py-2 border border-[#333] focus:outline-none focus:ring-2 focus:ring-[#BB86FC]"
-                    placeholder="ws://localhost:8000/asr"
-                  />
                 </div>
               </div>
             </div>

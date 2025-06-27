@@ -77,8 +77,9 @@
     "liveSession": "جلسة مباشرة",
     "chunkSize": "حجم الجزء (بالملي ثانية)",
     "websocketUrl": "لينك الويب سوكيت",
-    "liveTranscript": "المحادثة المباشر",
-    "startRecording": "ابدأ تسجيل علشان تشوف المحادثة المباشر",
+    "liveTranscript": "المحادثة المباشرة",
+    "liveTranslation": "الترجمة المباشرة",
+    "startRecording": "ابدأ تسجيل علشان تشوف المحادثة المباشرة",
     "silence": "سكات",
     "processing": "جاري التحميل...",
     "speaker": "المتكلّم",
@@ -86,6 +87,10 @@
     "endCall": "اقفل المحادثة",
     "leaveRoom": "اخرج من الأوضة",
     "recordingTime": "مدة التسجيل",
+    "mode": "الوضع",
+    "transcriptionMode": "نص مباشر",
+    "translationMode": "الترجمة",
+    "targetLanguage": "لغة الترجمة",
     "status": {
       "clickToStart": "اضغط علشان تبدأ المحادثة",
       "recording": "شغّال تسجيل...",
@@ -109,7 +114,7 @@
     "addToFavorites": "ضيف للمفضلة",
     "removeFromFavorites": "شيل من المفضلة",
     "sourceLanguage": "اللغة الأصلية",
-    "targetLanguage": "اللغة الهدف"
+    "targetLanguage": "لغة الترجمة"
   },
   "errors": {
     "microphoneAccess": "مش قادر أوصل للمايك. اتأكد من الصلاحيات.",
